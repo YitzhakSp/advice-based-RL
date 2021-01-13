@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from IPython import embed
+#from IPython import embed
 
 # from the DQN paper
 #The first convolution layer convolves the input with 32 filters of size 8 (stride 4),

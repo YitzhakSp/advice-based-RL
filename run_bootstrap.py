@@ -4,7 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 import numpy as np
-from IPython import embed
+#from IPython import embed
 from collections import Counter
 import torch
 torch.set_num_threads(2)
@@ -313,6 +313,7 @@ def evaluate(step_number):
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
+    a=7
     parser = ArgumentParser()
     parser.add_argument('-c', '--cuda', action='store_true', default=False)
     parser.add_argument('-l', '--model_loadpath', default='', help='.pkl model file full path')
