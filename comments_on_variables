@@ -1,0 +1,2 @@
+"terminal": equivalent to "done" in gym
+"live_lost": end of a life (when agent has multiple lives per episode)

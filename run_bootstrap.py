@@ -39,8 +39,8 @@ def plot_dict_losses(plot_dict, name='loss_example.png', rolling_length=4, plot_
     plt.close()
 
 def matplotlib_plot_all(p):
-    epoch_num = len(p['steps'])
-    epochs = np.arange(epoch_num)
+    episode_num = len(p['steps'])
+    epochs = np.arange(episode_num)
     steps = p['steps']
     plot_dict_losses({'episode steps':{'index':epochs,'val':p['episode_step']}}, name=os.path.join(model_base_filedir, 'episode_step.png'), rolling_length=0)
     plot_dict_losses({'episode steps':{'index':epochs,'val':p['episode_relative_times']}}, name=os.path.join(model_base_filedir, 'episode_relative_times.png'), rolling_length=10)
@@ -195,13 +195,10 @@ def ptlearn(states, actions, rewards, next_states, terminal_flags, masks):
 
 def train(step_number, last_save):
     """Contains the training and evaluation loops"""
-    epoch_num = len(perf['steps'])
+    episode_num = len(perf['steps'])
     while step_number < info['MAX_STEPS']:
-        ########################
-        ####### Training #######
-        ########################
-        epoch_frame = 0
-        while epoch_frame < info['EVAL_FREQUENCY']:
+        episode_frame = 0
+        while episode_frame < info['EVAL_FREQUENCY']:
             terminal = False
             life_lost = True
             state = env.reset()
@@ -210,7 +207,7 @@ def train(step_number, last_save):
             episode_reward_sum = 0
             random_state.shuffle(heads)
             active_head = heads[0]
-            epoch_num += 1
+            episode_num += 1
             ep_eps_list = []
             ptloss_list = []
             while not terminal:
@@ -226,9 +223,8 @@ def train(step_number, last_save):
                                                 frame=next_state[-1],
                                                 reward=np.sign(reward), # TODO -maybe there should be +1 here
                                                 terminal=life_lost)
-
                 step_number += 1
-                epoch_frame += 1
+                episode_frame += 1
                 episode_reward_sum += reward
                 state = next_state
 
@@ -254,7 +250,7 @@ def train(step_number, last_save):
             perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
             last_save = handle_checkpoint(last_save, step_number)
 
-            if not epoch_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
+            if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
                 # TODO plot title
                 print('avg reward', perf['avg_rewards'][-1])
                 print('last rewards', perf['episode_reward'][-info['PLOT_EVERY_EPISODES']:])
@@ -310,187 +306,185 @@ def evaluate(step_number):
     with open(efile, 'a') as eval_reward_file:
         print(step_number, np.mean(eval_rewards), file=eval_reward_file)
     return np.mean(eval_rewards)
+##########################################################################
+##########################################################################
+#main
+##########################################################################
+##########################################################################
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    a=7
-    parser = ArgumentParser()
-    parser.add_argument('-c', '--cuda', action='store_true', default=False)
-    parser.add_argument('-l', '--model_loadpath', default='', help='.pkl model file full path')
-    parser.add_argument('-b', '--buffer_loadpath', default='', help='.npz replay buffer file full path')
-    args = parser.parse_args()
-    if args.cuda:
-        device = 'cuda'
-    else:
-        device = 'cpu'
-    print("running on %s"%device)
 
-    info = {
-        #"GAME":'roms/breakout.bin', # gym prefix
-        "GAME":'roms/pong.bin', # gym prefix
-        "DEVICE":device, #cpu vs gpu set by argument
-        "NAME":'FRANKbootstrap_fasteranneal_pong', # start files with name
-        "DUELING":True, # use dueling dqn
-        "DOUBLE_DQN":True, # use double dqn
-        "PRIOR":True, # turn on to use randomized prior
-        "PRIOR_SCALE":10, # what to scale prior by
-        "N_ENSEMBLE":9, # number of bootstrap heads to use. when 1, this is a normal dqn
-        "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
-        "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
-        "TARGET_UPDATE":10000, # how often to update target network
-        "MIN_HISTORY_TO_LEARN":50000, # in environment frames
-        "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
-        "EPS_INITIAL":1.0, # should be 1
-        "EPS_FINAL":0.01, # 0.01 in osband
-        "EPS_EVAL":0.0, # 0 in osband, .05 in others....
-        "EPS_ANNEALING_FRAMES":int(1e6), # this may have been 1e6 in osband
-        #"EPS_ANNEALING_FRAMES":0, # if it annealing is zero, then it will only use the bootstrap after the first MIN_EXAMPLES_TO_LEARN steps which are random
-        "EPS_FINAL_FRAME":0.01,
-        "NUM_EVAL_EPISODES":1, # num examples to average in eval
-        "BUFFER_SIZE":int(1e6), # Buffer size for experience replay
-        "CHECKPOINT_EVERY_STEPS":500000, # how often to write pkl of model and npz of data buffer
-        "EVAL_FREQUENCY":250000, # how often to run evaluation episodes
-        "ADAM_LEARNING_RATE":6.25e-5,
-        "RMS_LEARNING_RATE": 0.00025, # according to paper = 0.00025
-        "RMS_DECAY":0.95,
-        "RMS_MOMENTUM":0.0,
-        "RMS_EPSILON":0.00001,
-        "RMS_CENTERED":True,
-        "HISTORY_SIZE":4, # how many past frames to use for state input
-        "N_EPOCHS":90000,  # Number of episodes to run
-        "BATCH_SIZE":32, # Batch size to use for learning
-        "GAMMA":.99, # Gamma weight in Q update
-        "PLOT_EVERY_EPISODES": 50,
-        "CLIP_GRAD":5, # Gradient clipping setting
-        "SEED":101,
-        "RANDOM_HEAD":-1, # just used in plotting as demarcation
-        "NETWORK_INPUT_SIZE":(84,84),
-        "START_TIME":time.time(),
-        "MAX_STEPS":int(50e6), # 50e6 steps is 200e6 frames
-        "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
-        "FRAME_SKIP":4, # deterministic frame skips to match deepmind
-        "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
-        "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life
-    }
+from argparse import ArgumentParser
+a=7
+parser = ArgumentParser()
+parser.add_argument('-c', '--cuda', action='store_true', default=False)
+parser.add_argument('-l', '--model_loadpath', default='', help='.pkl model file full path')
+parser.add_argument('-b', '--buffer_loadpath', default='', help='.npz replay buffer file full path')
+args = parser.parse_args()
+if args.cuda:
+    device = 'cuda'
+else:
+    device = 'cpu'
+print("running on %s"%device)
 
-    info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
-    info['args'] = args
-    info['load_time'] = datetime.date.today().ctime()
-    info['NORM_BY'] = float(info['NORM_BY'])
+info = {
+    #"GAME":'roms/breakout.bin', # gym prefix
+    "GAME":'roms/pong.bin', # gym prefix
+    "DEVICE":device, #cpu vs gpu set by argument
+    "NAME":'FRANKbootstrap_fasteranneal_pong', # start files with name
+    "DUELING":True, # use dueling dqn
+    "DOUBLE_DQN":True, # use double dqn
+    "PRIOR":True, # turn on to use randomized prior
+    "PRIOR_SCALE":10, # what to scale prior by
+    "N_ENSEMBLE":9, # number of bootstrap heads to use. when 1, this is a normal dqn
+    "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
+    "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
+    "TARGET_UPDATE":10000, # how often to update target network
+    "MIN_HISTORY_TO_LEARN":50000, # in environment frames
+    "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
+    "EPS_INITIAL":1.0, # should be 1
+    "EPS_FINAL":0.01, # 0.01 in osband
+    "EPS_EVAL":0.0, # 0 in osband, .05 in others....
+    "EPS_ANNEALING_FRAMES":int(1e6), # this may have been 1e6 in osband
+    #"EPS_ANNEALING_FRAMES":0, # if it annealing is zero, then it will only use the bootstrap after the first MIN_EXAMPLES_TO_LEARN steps which are random
+    "EPS_FINAL_FRAME":0.01,
+    "NUM_EVAL_EPISODES":1, # num examples to average in eval
+    "BUFFER_SIZE":int(1e6), # Buffer size for experience replay
+    "CHECKPOINT_EVERY_STEPS":500000, # how often to write pkl of model and npz of data buffer
+    "EVAL_FREQUENCY":250000, # how often to run evaluation episodes
+    "ADAM_LEARNING_RATE":6.25e-5,
+    "RMS_LEARNING_RATE": 0.00025, # according to paper = 0.00025
+    "RMS_DECAY":0.95,
+    "RMS_MOMENTUM":0.0,
+    "RMS_EPSILON":0.00001,
+    "RMS_CENTERED":True,
+    "HISTORY_SIZE":4, # how many past frames to use for state input
+    "N_EPOCHS":90000,  # Number of episodes to run
+    "BATCH_SIZE":32, # Batch size to use for learning
+    "GAMMA":.99, # Gamma weight in Q update
+    "PLOT_EVERY_EPISODES": 50,
+    "CLIP_GRAD":5, # Gradient clipping setting
+    "SEED":101,
+    "RANDOM_HEAD":-1, # just used in plotting as demarcation
+    "NETWORK_INPUT_SIZE":(84,84),
+    "START_TIME":time.time(),
+    "MAX_STEPS":int(50e6), # 50e6 steps is 200e6 frames
+    "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
+    "FRAME_SKIP":4, # deterministic frame skips to match deepmind
+    "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
+    "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life
+}
 
-    # create environment
-    env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
-                      num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['SEED'],
-                      dead_as_end=info['DEAD_AS_END'], max_episode_steps=info['MAX_EPISODE_STEPS'])
+info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
+info['args'] = args
+info['load_time'] = datetime.date.today().ctime()
+info['NORM_BY'] = float(info['NORM_BY'])
 
-    # create replay buffer
-    replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
-                                 frame_height=info['NETWORK_INPUT_SIZE'][0],
-                                 frame_width=info['NETWORK_INPUT_SIZE'][1],
-                                 agent_history_length=info['HISTORY_SIZE'],
-                                 batch_size=info['BATCH_SIZE'],
-                                 num_heads=info['N_ENSEMBLE'],
-                                 bernoulli_probability=info['BERNOULLI_PROBABILITY'])
+# create environment
+env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
+                  num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['SEED'],
+                  dead_as_end=info['DEAD_AS_END'], max_episode_steps=info['MAX_EPISODE_STEPS'])
 
-    random_state = np.random.RandomState(info["SEED"])
-    action_getter = ActionGetter(n_actions=env.num_actions,
-                                 eps_initial=info['EPS_INITIAL'],
-                                 eps_final=info['EPS_FINAL'],
-                                 eps_final_frame=info['EPS_FINAL_FRAME'],
-                                 eps_annealing_frames=info['EPS_ANNEALING_FRAMES'],
-                                 eps_evaluation=info['EPS_EVAL'],
-                                 replay_memory_start_size=info['MIN_HISTORY_TO_LEARN'],
-                                 max_steps=info['MAX_STEPS'])
+# create replay buffer
+replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
+                             frame_height=info['NETWORK_INPUT_SIZE'][0],
+                             frame_width=info['NETWORK_INPUT_SIZE'][1],
+                             agent_history_length=info['HISTORY_SIZE'],
+                             batch_size=info['BATCH_SIZE'],
+                             num_heads=info['N_ENSEMBLE'],
+                             bernoulli_probability=info['BERNOULLI_PROBABILITY'])
 
-    if args.model_loadpath != '':
-        # load data from loadpath - save model load for later. we need some of
-        # these parameters to setup other things
-        print('loading model from: %s' %args.model_loadpath)
-        model_dict = torch.load(args.model_loadpath)
-        info = model_dict['info']
-        info['DEVICE'] = device
-        # set a new random seed
-        info["SEED"] = model_dict['cnt']
-        model_base_filedir = os.path.split(args.model_loadpath)[0]
-        start_step_number = start_last_save = model_dict['cnt']
-        info['loaded_from'] = args.model_loadpath
-        perf = model_dict['perf']
-        start_step_number = perf['steps'][-1]
-    else:
-        # create new project
-        perf = {'steps':[],
-                'avg_rewards':[],
-                'episode_step':[],
-                'episode_head':[],
-                'eps_list':[],
-                'episode_loss':[],
-                'episode_reward':[],
-                'episode_times':[],
-                'episode_relative_times':[],
-                'eval_rewards':[],
-                'eval_steps':[]}
+random_state = np.random.RandomState(info["SEED"])
+action_getter = ActionGetter(n_actions=env.num_actions,
+                             eps_initial=info['EPS_INITIAL'],
+                             eps_final=info['EPS_FINAL'],
+                             eps_final_frame=info['EPS_FINAL_FRAME'],
+                             eps_annealing_frames=info['EPS_ANNEALING_FRAMES'],
+                             eps_evaluation=info['EPS_EVAL'],
+                             replay_memory_start_size=info['MIN_HISTORY_TO_LEARN'],
+                             max_steps=info['MAX_STEPS'])
 
-        start_step_number = 0
-        start_last_save = 0
-        # make new directory for this run in the case that there is already a
-        # project with this name
-        run_num = 0
+if args.model_loadpath != '':
+    # load data from loadpath - save model load for later. we need some of
+    # these parameters to setup other things
+    print('loading model from: %s' %args.model_loadpath)
+    model_dict = torch.load(args.model_loadpath)
+    info = model_dict['info']
+    info['DEVICE'] = device
+    # set a new random seed
+    info["SEED"] = model_dict['cnt']
+    model_base_filedir = os.path.split(args.model_loadpath)[0]
+    start_step_number = start_last_save = model_dict['cnt']
+    info['loaded_from'] = args.model_loadpath
+    perf = model_dict['perf']
+    start_step_number = perf['steps'][-1]
+else:
+    # create new project
+    perf = {'steps':[],
+            'avg_rewards':[],
+            'episode_step':[],
+            'episode_head':[],
+            'eps_list':[],
+            'episode_loss':[],
+            'episode_reward':[],
+            'episode_times':[],
+            'episode_relative_times':[],
+            'eval_rewards':[],
+            'eval_steps':[]}
+
+    start_step_number = 0
+    start_last_save = 0
+    # make new directory for this run in the case that there is already a
+    # project with this name
+    run_num = 0
+    model_base_filedir = os.path.join(config.model_savedir, info['NAME'] + '%02d'%run_num)
+    while os.path.exists(model_base_filedir):
+        run_num +=1
         model_base_filedir = os.path.join(config.model_savedir, info['NAME'] + '%02d'%run_num)
-        while os.path.exists(model_base_filedir):
-            run_num +=1
-            model_base_filedir = os.path.join(config.model_savedir, info['NAME'] + '%02d'%run_num)
-        os.makedirs(model_base_filedir)
-        print("----------------------------------------------")
-        print("starting NEW project: %s"%model_base_filedir)
+    os.makedirs(model_base_filedir)
+    print("----------------------------------------------")
+    print("starting NEW project: %s"%model_base_filedir)
 
-    model_base_filepath = os.path.join(model_base_filedir, info['NAME'])
-    write_info_file(info, model_base_filepath, start_step_number)
-    heads = list(range(info['N_ENSEMBLE']))
-    seed_everything(info["SEED"])
+model_base_filepath = os.path.join(model_base_filedir, info['NAME'])
+write_info_file(info, model_base_filepath, start_step_number)
+heads = list(range(info['N_ENSEMBLE']))
+seed_everything(info["SEED"])
 
-    policy_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
-                                      n_actions=env.num_actions,
-                                      network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                                      num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
-    target_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
-                                      n_actions=env.num_actions,
-                                      network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                                      num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
-    if info['PRIOR']:
-        prior_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
-                                n_actions=env.num_actions,
-                                network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                                num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
+policy_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
+                                  n_actions=env.num_actions,
+                                  network_output_size=info['NETWORK_INPUT_SIZE'][0],
+                                  num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
+target_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
+                                  n_actions=env.num_actions,
+                                  network_output_size=info['NETWORK_INPUT_SIZE'][0],
+                                  num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
+if info['PRIOR']:
+    prior_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
+                            n_actions=env.num_actions,
+                            network_output_size=info['NETWORK_INPUT_SIZE'][0],
+                            num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
 
-        print("using randomized prior")
-        policy_net = NetWithPrior(policy_net, prior_net, info['PRIOR_SCALE'])
-        target_net = NetWithPrior(target_net, prior_net, info['PRIOR_SCALE'])
+    print("using randomized prior")
+    policy_net = NetWithPrior(policy_net, prior_net, info['PRIOR_SCALE'])
+    target_net = NetWithPrior(target_net, prior_net, info['PRIOR_SCALE'])
 
-    target_net.load_state_dict(policy_net.state_dict())
-    # create optimizer
-    #opt = optim.RMSprop(policy_net.parameters(),
-    #                    lr=info["RMS_LEARNING_RATE"],
-    #                    momentum=info["RMS_MOMENTUM"],
-    #                    eps=info["RMS_EPSILON"],
-    #                    centered=info["RMS_CENTERED"],
-    #                    alpha=info["RMS_DECAY"])
-    opt = optim.Adam(policy_net.parameters(), lr=info['ADAM_LEARNING_RATE'])
+target_net.load_state_dict(policy_net.state_dict())
+opt = optim.Adam(policy_net.parameters(), lr=info['ADAM_LEARNING_RATE'])
 
-    if args.model_loadpath is not '':
-        # what about random states - they will be wrong now???
-        # TODO - what about target net update cnt
-        target_net.load_state_dict(model_dict['target_net_state_dict'])
-        policy_net.load_state_dict(model_dict['policy_net_state_dict'])
-        opt.load_state_dict(model_dict['optimizer'])
-        print("loaded model state_dicts")
-        if args.buffer_loadpath == '':
-            args.buffer_loadpath = args.model_loadpath.replace('.pkl', '_train_buffer.npz')
-            print("auto loading buffer from:%s" %args.buffer_loadpath)
-            try:
-                replay_memory.load_buffer(args.buffer_loadpath)
-            except Exception as e:
-                print(e)
-                print('not able to load from buffer: %s. exit() to continue with empty buffer' %args.buffer_loadpath)
+if args.model_loadpath is not '':
+    # what about random states - they will be wrong now???
+    # TODO - what about target net update cnt
+    target_net.load_state_dict(model_dict['target_net_state_dict'])
+    policy_net.load_state_dict(model_dict['policy_net_state_dict'])
+    opt.load_state_dict(model_dict['optimizer'])
+    print("loaded model state_dicts")
+    if args.buffer_loadpath == '':
+        args.buffer_loadpath = args.model_loadpath.replace('.pkl', '_train_buffer.npz')
+        print("auto loading buffer from:%s" %args.buffer_loadpath)
+        try:
+            replay_memory.load_buffer(args.buffer_loadpath)
+        except Exception as e:
+            print(e)
+            print('not able to load from buffer: %s. exit() to continue with empty buffer' %args.buffer_loadpath)
 
-    train(start_step_number, start_last_save)
+train(start_step_number, start_last_save)
 
