@@ -1,1 +1,1 @@
-"MIN_HISTORY_TO_LEARN": 5000,  # in environment frames
+"MIN_HISTORY_TO_LEARN": 50000,  # in environment frames
