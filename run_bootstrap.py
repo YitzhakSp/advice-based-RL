@@ -18,6 +18,9 @@ from dqn_utils import seed_everything, write_info_file, generate_gif, save_check
 from env import Environment
 from replay import ReplayMemory
 import config
+from argparse import ArgumentParser
+
+
 
 def rolling_average(a, n=5) :
     if n == 0:
@@ -194,74 +197,77 @@ def ptlearn(states, actions, rewards, next_states, terminal_flags, masks):
     return np.mean(losses)
 
 def train(step_number, last_save):
-    """Contains the training and evaluation loops"""
+    """
+    modified by yitz
+    replaced 3 loops by 2 loops
+    """
+    # TODO eval every k episodes
     episode_num = len(perf['steps'])
-    while step_number < info['MAX_STEPS']:
-        episode_frame = 0
-        while episode_frame < info['EVAL_FREQUENCY']:
-            terminal = False
-            life_lost = True
-            state = env.reset()
-            start_steps = step_number
-            st = time.time()
-            episode_reward_sum = 0
-            random_state.shuffle(heads)
-            active_head = heads[0]
-            episode_num += 1
-            ep_eps_list = []
-            ptloss_list = []
-            while not terminal:
-                if life_lost:
-                    action = 1
-                    eps = 0
-                else:
-                    eps,action = action_getter.pt_get_action(step_number, state=state, active_head=active_head)
-                ep_eps_list.append(eps)
-                next_state, reward, life_lost, terminal = env.step(action)
-                # Store transition in the replay memory
-                replay_memory.add_experience(action=action,
-                                                frame=next_state[-1],
-                                                reward=np.sign(reward), # TODO -maybe there should be +1 here
-                                                terminal=life_lost)
-                step_number += 1
-                episode_frame += 1
-                episode_reward_sum += reward
-                state = next_state
+    while episode_num < info['MAX_EPISODES']:
+        print('episode '+ str(episode_num))
+        terminal = False
+        life_lost = True
+        state = env.reset()
+        start_steps = step_number
+        start_time = time.time()
+        episode_reward_sum = 0
+        random_state.shuffle(heads)
+        active_head = heads[0]
+        episode_num += 1
+        ep_eps_list = []
+        ptloss_list = []
+        while not terminal:
+            if life_lost:
+                action = 1
+                eps = 0
+            else:
+                eps,action = action_getter.pt_get_action(step_number, state=state, active_head=active_head)
+            ep_eps_list.append(eps)
+            next_state, reward, life_lost, terminal = env.step(action)
+            # Store transition in the replay memory
+            replay_memory.add_experience(action=action,
+                                            frame=next_state[-1],
+                                            reward=np.sign(reward), # TODO -maybe there should be +1 here
+                                            terminal=life_lost)
+            step_number += 1
+            episode_reward_sum += reward
+            state = next_state
 
-                if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
-                    _states, _actions, _rewards, _next_states, _terminal_flags, _masks = replay_memory.get_minibatch(info['BATCH_SIZE'])
-                    ptloss = ptlearn(_states, _actions, _rewards, _next_states, _terminal_flags, _masks)
-                    ptloss_list.append(ptloss)
-                if step_number % info['TARGET_UPDATE'] == 0 and step_number >  info['MIN_HISTORY_TO_LEARN']:
-                    print("++++++++++++++++++++++++++++++++++++++++++++++++")
-                    print('updating target network at %s'%step_number)
-                    target_net.load_state_dict(policy_net.state_dict())
+            if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
+                _states, _actions, _rewards, _next_states, _terminal_flags, _masks = replay_memory.get_minibatch(info['BATCH_SIZE'])
+                ptloss = ptlearn(_states, _actions, _rewards, _next_states, _terminal_flags, _masks)
+                ptloss_list.append(ptloss)
+            if step_number % info['TARGET_UPDATE'] == 0 and step_number >  info['MIN_HISTORY_TO_LEARN']:
+                print("++++++++++++++++++++++++++++++++++++++++++++++++")
+                print('updating target network at %s'%step_number)
+                target_net.load_state_dict(policy_net.state_dict())
 
-            et = time.time()
-            ep_time = et-st
-            perf['steps'].append(step_number)
-            perf['episode_step'].append(step_number-start_steps)
-            perf['episode_head'].append(active_head)
-            perf['eps_list'].append(np.mean(ep_eps_list))
-            perf['episode_loss'].append(np.mean(ptloss_list))
-            perf['episode_reward'].append(episode_reward_sum)
-            perf['episode_times'].append(ep_time)
-            perf['episode_relative_times'].append(time.time()-info['START_TIME'])
-            perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
-            last_save = handle_checkpoint(last_save, step_number)
+        end_time = time.time()
+        ep_time = end_time-start_time
+        perf['steps'].append(step_number)
+        perf['episode_step'].append(step_number-start_steps)
+        perf['episode_head'].append(active_head)
+        perf['eps_list'].append(np.mean(ep_eps_list))
+        perf['episode_loss'].append(np.mean(ptloss_list))
+        perf['episode_reward'].append(episode_reward_sum)
+        perf['episode_times'].append(ep_time)
+        perf['episode_relative_times'].append(time.time()-info['START_TIME'])
+        perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
+        last_save = handle_checkpoint(last_save, step_number)
 
-            if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
-                # TODO plot title
-                print('avg reward', perf['avg_rewards'][-1])
-                print('last rewards', perf['episode_reward'][-info['PLOT_EVERY_EPISODES']:])
+        if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
+            # TODO plot title
+            print('avg reward', perf['avg_rewards'][-1])
+            print('last rewards', perf['episode_reward'][-info['PLOT_EVERY_EPISODES']:])
 
-                matplotlib_plot_all(perf)
-                with open('rewards.txt', 'a') as reward_file:
-                    print(len(perf['episode_reward']), step_number, perf['avg_rewards'][-1], file=reward_file)
-        avg_eval_reward = evaluate(step_number)
-        perf['eval_rewards'].append(avg_eval_reward)
-        perf['eval_steps'].append(step_number)
-        matplotlib_plot_all(perf)
+            matplotlib_plot_all(perf)
+            with open('rewards.txt', 'a') as reward_file:
+                print(len(perf['episode_reward']), step_number, perf['avg_rewards'][-1], file=reward_file)
+        if episode_num%info['EVAL_FREQUENCY']==0:
+            avg_eval_reward = evaluate(step_number)
+            perf['eval_rewards'].append(avg_eval_reward)
+            perf['eval_steps'].append(step_number)
+            matplotlib_plot_all(perf)
 
 def evaluate(step_number):
     print("""
@@ -313,8 +319,7 @@ def evaluate(step_number):
 ##########################################################################
 
 
-from argparse import ArgumentParser
-a=7
+load_model=False
 parser = ArgumentParser()
 parser.add_argument('-c', '--cuda', action='store_true', default=False)
 parser.add_argument('-l', '--model_loadpath', default='', help='.pkl model file full path')
@@ -339,7 +344,7 @@ info = {
     "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
-    "MIN_HISTORY_TO_LEARN":50000, # in environment frames
+    "MIN_HISTORY_TO_LEARN":5000, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband
@@ -350,7 +355,7 @@ info = {
     "NUM_EVAL_EPISODES":1, # num examples to average in eval
     "BUFFER_SIZE":int(1e6), # Buffer size for experience replay
     "CHECKPOINT_EVERY_STEPS":500000, # how often to write pkl of model and npz of data buffer
-    "EVAL_FREQUENCY":250000, # how often to run evaluation episodes
+    "EVAL_FREQUENCY":2, # how often to run evaluation episodes
     "ADAM_LEARNING_RATE":6.25e-5,
     "RMS_LEARNING_RATE": 0.00025, # according to paper = 0.00025
     "RMS_DECAY":0.95,
@@ -358,7 +363,6 @@ info = {
     "RMS_EPSILON":0.00001,
     "RMS_CENTERED":True,
     "HISTORY_SIZE":4, # how many past frames to use for state input
-    "N_EPOCHS":90000,  # Number of episodes to run
     "BATCH_SIZE":32, # Batch size to use for learning
     "GAMMA":.99, # Gamma weight in Q update
     "PLOT_EVERY_EPISODES": 50,
@@ -371,6 +375,7 @@ info = {
     "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
+    "MAX_EPISODES":10000,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life
 }
 
@@ -403,7 +408,7 @@ action_getter = ActionGetter(n_actions=env.num_actions,
                              replay_memory_start_size=info['MIN_HISTORY_TO_LEARN'],
                              max_steps=info['MAX_STEPS'])
 
-if args.model_loadpath != '':
+if load_model:
     # load data from loadpath - save model load for later. we need some of
     # these parameters to setup other things
     print('loading model from: %s' %args.model_loadpath)
