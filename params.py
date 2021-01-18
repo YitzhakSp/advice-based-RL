@@ -19,7 +19,7 @@ info = {
     "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
-    "MIN_HISTORY_TO_LEARN":5000, # in steps
+    "MIN_HISTORY_TO_LEARN":500, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband

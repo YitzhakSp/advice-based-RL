@@ -10,16 +10,9 @@ import torch
 torch.set_num_threads(2)
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-import datetime
-import time
-from dqn_model import EnsembleNet, NetWithPrior
 from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
-from env import Environment
-from replay import ReplayMemory
-import config
-from argparse import ArgumentParser
 from params import *
+from other_utils import *
 
 class ActionGetter:
     """Determines an action according to an epsilon greedy strategy with annealing epsilon"""
@@ -167,24 +160,24 @@ def ptlearn(states, actions, rewards, next_states, terminal_flags, masks,mvars):
     next_q_target_vals = mvars['target_net'](next_states, None)
     next_q_policy_vals = mvars['policy_net'](next_states, None)
     cnt_losses = []
-    for k in range(info['N_ENSEMBLE']):
+    for head_id in range(info['N_ENSEMBLE']):
         #TODO finish masking
-        total_used = torch.sum(masks[:,k])
+        total_used = torch.sum(masks[:,head_id])
         if total_used > 0.0:
-            next_q_vals = next_q_target_vals[k].data
+            next_q_vals = next_q_target_vals[head_id].data
             if info['DOUBLE_DQN']:
-                next_actions = next_q_policy_vals[k].data.max(1, True)[1]
+                next_actions = next_q_policy_vals[head_id].data.max(1, True)[1]
                 next_qs = next_q_vals.gather(1, next_actions).squeeze(1)
             else:
                 next_qs = next_q_vals.max(1)[0] # max returns a pair
 
-            preds = q_policy_vals[k].gather(1, actions[:,None]).squeeze(1)
+            preds = q_policy_vals[head_id].gather(1, actions[:,None]).squeeze(1)
             targets = rewards + info['GAMMA'] * next_qs * (1-terminal_flags)
-            l1loss = F.smooth_l1_loss(preds, targets, reduction='mean')
-            full_loss = masks[:,k]*l1loss
-            loss = torch.sum(full_loss/total_used)
+            totalloss_thishead = F.smooth_l1_loss(preds, targets, reduction='mean')
+            totalloss_bysample_thishead = masks[:,head_id]*totalloss_thishead
+            loss = torch.sum(totalloss_bysample_thishead/total_used)
             cnt_losses.append(loss)
-            losses[k] = loss.cpu().detach().item()
+            losses[head_id] = loss.cpu().detach().item()
 
     loss = sum(cnt_losses)/info['N_ENSEMBLE']
     loss.backward()
@@ -214,8 +207,7 @@ def train(step_number,
         start_steps = step_number
         start_time = time.time()
         episode_reward_sum = 0
-        mvars['random_state'].shuffle(mvars['heads'])
-        active_head = mvars['heads'][0]
+        active_head = np.random.randint(info['N_ENSEMBLE'])
         episode_num += 1
         ep_eps_list = []
         ptloss_list = []
@@ -235,10 +227,16 @@ def train(step_number,
             step_number += 1
             episode_reward_sum += reward
             state = next_state
-
+            ##############################################
+            # to be deleted
+            print('computing heads variance ...')
+            #heads_values=get_head_outputs_as_numpy(state,mvars['policy_net'])
+            heads_variance=get_heads_variance(state,mvars['policy_net'])
+            #################################################
             if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
+                #print('performing learning step')
                 _states, _actions, _rewards, _next_states, _terminal_flags, _masks = mvars['replay_memory'].get_minibatch(info['BATCH_SIZE'])
-                ptloss = ptlearn(_states, _actions, _rewards, _next_states, _terminal_flags, _masks)
+                ptloss = ptlearn(_states, _actions, _rewards, _next_states, _terminal_flags, _masks,mvars)
                 ptloss_list.append(ptloss)
             if step_number % info['TARGET_UPDATE'] == 0 and step_number >  info['MIN_HISTORY_TO_LEARN']:
                 print("++++++++++++++++++++++++++++++++++++++++++++++++")

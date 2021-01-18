@@ -33,7 +33,6 @@ replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              batch_size=info['BATCH_SIZE'],
                              num_heads=info['N_ENSEMBLE'],
                              bernoulli_probability=info['BERNOULLI_PROBABILITY'])
-random_state = np.random.RandomState(info["SEED"])
 if load_model:
     # load data from loadpath - save model load for later. we need some of
     # these parameters to setup other things
@@ -125,7 +124,6 @@ mvars={
 'opt':opt,
 'model_base_filedir':model_base_filedir,
 'env':env,
-'random_state':random_state,
 'heads':heads
 }
 train(start_step_number,
