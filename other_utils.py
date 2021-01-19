@@ -25,7 +25,7 @@ def get_head_outputs_as_numpy(state,qfunc):
     return head_outputs
 
 
-def get_heads_variance(state,qfunc):
+def compute_uncertainty(state, qfunc):
     heads_values = get_head_outputs_as_numpy(state, qfunc)
     num_actions=heads_values['head_0'].shape[0]
     action_values={}

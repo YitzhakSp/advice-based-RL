@@ -21,6 +21,8 @@ info = {
     "TARGET_UPDATE":10000, # how often to update target network
     "MIN_HISTORY_TO_LEARN":500, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
+    'COMP_UNCERT': True,
+    'UNCERT_FREQ': 4,
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband
     "EPS_EVAL":0.0, # 0 in osband, .05 in others....
@@ -29,7 +31,7 @@ info = {
     "EPS_FINAL_FRAME":0.01,
     "NUM_EVAL_EPISODES":1, # num examples to average in eval
     "BUFFER_SIZE":int(1e6), # Buffer size for experience replay
-    "CHECKPOINT_EVERY_STEPS":500000, # how often to write pkl of model and npz of data buffer
+    "CHECKPOINT_EVERY_EPISODES":1, # how often to write pkl of model and npz of data buffer
     "EVAL_FREQUENCY":2, # how often to run evaluation episodes
     "ADAM_LEARNING_RATE":6.25e-5,
     "RMS_LEARNING_RATE": 0.00025, # according to paper = 0.00025

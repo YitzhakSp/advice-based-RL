@@ -58,7 +58,9 @@ else:
             'episode_times':[],
             'episode_relative_times':[],
             'eval_rewards':[],
-            'eval_steps':[]}
+            'eval_steps':[],
+            'min_uncertainty':[],
+            'max_uncertainty':[]}
     start_step_number = 0
     start_last_save = 0
     # make new directory for this run in the case that there is already a
@@ -122,6 +124,7 @@ mvars={
 'target_net':target_net,
 'replay_memory':replay_memory,
 'opt':opt,
+'model_base_filepath':model_base_filepath,
 'model_base_filedir':model_base_filedir,
 'env':env,
 'heads':heads

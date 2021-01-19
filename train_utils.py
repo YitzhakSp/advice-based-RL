@@ -13,6 +13,7 @@ import torch.nn.functional as F
 from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
 from params import *
 from other_utils import *
+import json
 
 class ActionGetter:
     """Determines an action according to an epsilon greedy strategy with annealing epsilon"""
@@ -124,26 +125,28 @@ def matplotlib_plot_all(p,model_base_filedir):
     plot_dict_losses({'steps avg reward':{'index':steps,'val':p['avg_rewards']}}, name=os.path.join(model_base_filedir, 'steps_avg_reward.png'), rolling_length=0)
     plot_dict_losses({'eval rewards':{'index':p['eval_steps'], 'val':p['eval_rewards']}}, name=os.path.join(model_base_filedir, 'eval_rewards_steps.png'), rolling_length=0)
 
-def handle_checkpoint(last_save, cnt, mvars,perf):
-    if (cnt-last_save) >= info['CHECKPOINT_EVERY_STEPS']:
+def handle_checkpoint(last_save, episode_num, mvars, perf):
+    if episode_num % info['CHECKPOINT_EVERY_EPISODES']==0:
         st = time.time()
-        print("beginning checkpoint", st)
-        last_save = cnt
-        state = {'info':info,
+        print("saving performance ...")
+        last_save = episode_num
+        model_state = {'info':info,
                  'optimizer': mvars['opt'].state_dict(),
-                 'cnt':cnt,
+                 'episode_num':episode_num,
                  'policy_net_state_dict':mvars['policy_net'].state_dict(),
                  'target_net_state_dict':mvars['target_net'].state_dict(),
                  'perf':perf
                 }
-        filename = os.path.abspath(mvars['model_base_filepath'] + "_%010dq.pkl" % cnt)
-        save_checkpoint(state, filename)
+
+        filename = os.path.abspath(mvars['model_base_filepath'] + ".pkl")
+        save_checkpoint(model_state, filename)
+        with open(mvars['model_base_filedir']+'/perf.json', 'w') as fp:
+            json.dump(perf, fp)
         # npz will be added
-        buff_filename = os.path.abspath(mvars['model_base_filepath'] + "_%010dq_train_buffer" % cnt)
-        mvars['replay_memory'].save_buffer(buff_filename)
-        print("finished checkpoint", time.time()-st)
-        return last_save
-    else: return last_save
+        #buff_filename = os.path.abspath(mvars['model_base_filepath'] + "_%010dq_train_buffer" % episode_num)
+        #mvars['replay_memory'].save_buffer(buff_filename)
+        #print("finished checkpoint", time.time()-st)
+    return last_save
 
 
 def ptlearn(states, actions, rewards, next_states, terminal_flags, masks,mvars):
@@ -170,7 +173,6 @@ def ptlearn(states, actions, rewards, next_states, terminal_flags, masks,mvars):
                 next_qs = next_q_vals.gather(1, next_actions).squeeze(1)
             else:
                 next_qs = next_q_vals.max(1)[0] # max returns a pair
-
             preds = q_policy_vals[head_id].gather(1, actions[:,None]).squeeze(1)
             targets = rewards + info['GAMMA'] * next_qs * (1-terminal_flags)
             totalloss_thishead = F.smooth_l1_loss(preds, targets, reduction='mean')
@@ -178,7 +180,6 @@ def ptlearn(states, actions, rewards, next_states, terminal_flags, masks,mvars):
             loss = torch.sum(totalloss_bysample_thishead/total_used)
             cnt_losses.append(loss)
             losses[head_id] = loss.cpu().detach().item()
-
     loss = sum(cnt_losses)/info['N_ENSEMBLE']
     loss.backward()
     for param in mvars['policy_net'].core_net.parameters():
@@ -208,6 +209,9 @@ def train(step_number,
         start_time = time.time()
         episode_reward_sum = 0
         active_head = np.random.randint(info['N_ENSEMBLE'])
+        if ['COMP_UNCERT']:
+            min_uncertainty = compute_uncertainty(state, mvars['policy_net'])
+            max_uncertainty=min_uncertainty
         episode_num += 1
         ep_eps_list = []
         ptloss_list = []
@@ -227,12 +231,11 @@ def train(step_number,
             step_number += 1
             episode_reward_sum += reward
             state = next_state
-            ##############################################
-            # to be deleted
-            print('computing heads variance ...')
-            #heads_values=get_head_outputs_as_numpy(state,mvars['policy_net'])
-            heads_variance=get_heads_variance(state,mvars['policy_net'])
-            #################################################
+            if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
+                #print('computing uncertainty ...')
+                uncertainty=compute_uncertainty(state, mvars['policy_net'])
+                min_uncertainty=min(uncertainty,min_uncertainty)
+                max_uncertainty=max(uncertainty,max_uncertainty)
             if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
                 #print('performing learning step')
                 _states, _actions, _rewards, _next_states, _terminal_flags, _masks = mvars['replay_memory'].get_minibatch(info['BATCH_SIZE'])
@@ -242,7 +245,6 @@ def train(step_number,
                 print("++++++++++++++++++++++++++++++++++++++++++++++++")
                 print('updating target network at %s'%step_number)
                 mvars['target_net'].load_state_dict(mvars['policy_net'].state_dict())
-
         end_time = time.time()
         ep_time = end_time-start_time
         perf['steps'].append(step_number)
@@ -254,6 +256,9 @@ def train(step_number,
         perf['episode_times'].append(ep_time)
         perf['episode_relative_times'].append(time.time()-info['START_TIME'])
         perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
+        if info['COMP_UNCERT']:
+            perf['min_uncertainty'].append(min_uncertainty)
+            perf['max_uncertainty'].append(max_uncertainty)
         last_save = handle_checkpoint(last_save, step_number,mvars,perf)
         if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
             # TODO plot title
@@ -304,10 +309,11 @@ def evaluate(step_number,action_getter,mvars):
         eval_rewards.append(episode_reward_sum)
 
     print("Evaluation score:\n", np.mean(eval_rewards))
+    '''
     generate_gif(mvars['model_base_filedir'], step_number, frames_for_gif, eval_rewards[0], name='test', results=results_for_eval)
-
     # Show the evaluation score in tensorboard
     efile = os.path.join(mvars['model_base_filedir'], 'eval_rewards.txt')
     with open(efile, 'a') as eval_reward_file:
         print(step_number, np.mean(eval_rewards), file=eval_reward_file)
+    '''
     return np.mean(eval_rewards)
