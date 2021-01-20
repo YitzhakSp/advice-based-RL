@@ -18,7 +18,8 @@ def weights_init(m):
     """custom weights initialization"""
     classtype = m.__class__
     if classtype == nn.Linear or classtype == nn.Conv2d:
-        print("default init")
+        xy=7
+        #print("default init")
         #m.weight.data.normal_(0.0, 0.02)
         #m.bias.data.fill_(0)
     elif classtype == nn.BatchNorm2d:
@@ -92,7 +93,7 @@ class EnsembleNet(nn.Module):
         self.core_net = CoreNet(network_output_size=network_output_size, num_channels=num_channels)
         self.dueling = dueling
         if self.dueling:
-            print("using dueling dqn")
+            #print("using dueling dqn")
             self.net_list = nn.ModuleList([DuelingHeadNet(n_actions=n_actions) for k in range(n_ensemble)])
         else:
             self.net_list = nn.ModuleList([HeadNet(n_actions=n_actions) for k in range(n_ensemble)])

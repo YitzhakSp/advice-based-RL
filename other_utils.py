@@ -34,6 +34,6 @@ def compute_uncertainty(state, qfunc):
     variances_sum=0
     for key in action_values:
         variances_sum+=np.var(action_values[key])
-    heads_variance=variances_sum/num_actions
-    return heads_variance
+    uncertainty=variances_sum/num_actions
+    return uncertainty
 

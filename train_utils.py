@@ -164,7 +164,7 @@ def ptlearn(states, actions, rewards, next_states, terminal_flags, masks,mvars):
     next_q_policy_vals = mvars['policy_net'](next_states, None)
     cnt_losses = []
     for head_id in range(info['N_ENSEMBLE']):
-        #TODO finish masking
+        #TODO finish masking (this TODO is from johana)
         total_used = torch.sum(masks[:,head_id])
         if total_used > 0.0:
             next_q_vals = next_q_target_vals[head_id].data
