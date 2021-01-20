@@ -36,8 +36,8 @@ replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
 if load_model:
     # load data from loadpath - save model load for later. we need some of
     # these parameters to setup other things
-    print('loading model from: %s' %info.model_loadpath)
-    model_dict = torch.load(info.model_loadpath)
+    print('loading model from: %s' %info['model_loadpath'])
+    model_dict = torch.load(info['model_loadpath'])
     info = model_dict['info']
     info['DEVICE'] = device
     # set a new random seed
@@ -70,6 +70,7 @@ else:
     while os.path.exists(model_base_filedir):
         run_num +=1
         model_base_filedir = os.path.join(config.model_savedir, info['NAME'] + '%02d'%run_num)
+    assert(run_num<20)     #make sure that models dir doesn't get too large
     os.makedirs(model_base_filedir)
     print("----------------------------------------------")
     print("starting NEW project: %s"%model_base_filedir)
