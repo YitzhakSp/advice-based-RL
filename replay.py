@@ -45,7 +45,7 @@ class ReplayMemory:
 
     def save_buffer(self, filepath):
         st = time.time()
-        print("starting save of buffer to %s"%filepath, st)
+        print("starting save of buffer to %s"%filepath)
         np.savez(filepath,
                  frames=self.frames, actions=self.actions, rewards=self.rewards,
                  terminal_flags=self.terminal_flags, masks=self.masks,
@@ -54,7 +54,7 @@ class ReplayMemory:
                  frame_height=self.frame_height, frame_width=self.frame_width,
                  num_heads=self.num_heads, bernoulli_probability=self.bernoulli_probability,
                  )
-        print("finished saving buffer", time.time()-st)
+        #print("finished saving buffer", time.time()-st)
 
     def load_buffer(self, filepath):
         st = time.time()

@@ -122,13 +122,13 @@ def matplotlib_plot_all(p,model_base_filedir):
     plot_dict_losses({'steps reward':{'index':steps,'val':p['episode_reward']}},  name=os.path.join(model_base_filedir, 'steps_reward.png'), rolling_length=0)
     plot_dict_losses({'episode reward':{'index':epochs, 'val':p['episode_reward']}}, name=os.path.join(model_base_filedir, 'episode_reward.png'), rolling_length=0)
     plot_dict_losses({'episode times':{'index':epochs,'val':p['episode_times']}}, name=os.path.join(model_base_filedir, 'episode_times.png'), rolling_length=5)
-    plot_dict_losses({'steps avg reward':{'index':steps,'val':p['avg_rewards']}}, name=os.path.join(model_base_filedir, 'steps_avg_reward.png'), rolling_length=0)
+    #plot_dict_losses({'steps avg reward':{'index':steps,'val':p['avg_rewards']}}, name=os.path.join(model_base_filedir, 'steps_avg_reward.png'), rolling_length=0)
     plot_dict_losses({'eval rewards':{'index':p['eval_steps'], 'val':p['eval_rewards']}}, name=os.path.join(model_base_filedir, 'eval_rewards_steps.png'), rolling_length=0)
 
 def handle_checkpoint(last_save, episode_num, mvars, perf):
     if episode_num % info['CHECKPOINT_EVERY_EPISODES']==0:
         st = time.time()
-        print("saving performance ...")
+        print("saving performance and model ...")
         last_save = episode_num
         model_state = {'info':info,
                  'optimizer': mvars['opt'].state_dict(),
@@ -143,8 +143,8 @@ def handle_checkpoint(last_save, episode_num, mvars, perf):
         with open(mvars['model_base_filedir']+'/perf.json', 'w') as fp:
             json.dump(perf, fp)
         # npz will be added
-        #buff_filename = os.path.abspath(mvars['model_base_filepath'] + "_%010dq_train_buffer" % episode_num)
-        #mvars['replay_memory'].save_buffer(buff_filename)
+        buff_filename = os.path.abspath(mvars['model_base_filepath'] + "_train_buffer" )
+        mvars['replay_memory'].save_buffer(buff_filename)
         #print("finished checkpoint", time.time()-st)
     return last_save
 
@@ -255,18 +255,20 @@ def train(step_number,
         perf['episode_reward'].append(episode_reward_sum)
         perf['episode_times'].append(ep_time)
         perf['episode_relative_times'].append(time.time()-info['START_TIME'])
-        perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
+        #perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
         if info['COMP_UNCERT']:
             perf['min_uncertainty'].append(min_uncertainty)
             perf['max_uncertainty'].append(max_uncertainty)
-        last_save = handle_checkpoint(last_save, step_number,mvars,perf)
+        last_save = handle_checkpoint(last_save, episode_num,mvars,perf)
         if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
-            # TODO plot title
-            print('avg reward', perf['avg_rewards'][-1])
+            # TODO plot title (TODO from johana)
+            #print('avg reward', perf['avg_rewards'][-1])
             print('last rewards', perf['episode_reward'][-info['PLOT_EVERY_EPISODES']:])
             matplotlib_plot_all(perf,mvars['model_base_filedir'])
+            '''
             with open('rewards.txt', 'a') as reward_file:
                 print(len(perf['episode_reward']), step_number, perf['avg_rewards'][-1], file=reward_file)
+            '''
         if episode_num%info['EVAL_FREQUENCY']==0:
             avg_eval_reward = evaluate(step_number,action_getter,mvars)
             perf['eval_rewards'].append(avg_eval_reward)

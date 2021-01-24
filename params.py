@@ -15,7 +15,7 @@ info = {
     "DOUBLE_DQN":True, # use double dqn
     "PRIOR":True, # turn on to use randomized prior
     "PRIOR_SCALE":10, # what to scale prior by
-    "N_ENSEMBLE":9, # number of bootstrap heads to use. when 1, this is a normal dqn
+    "N_ENSEMBLE":10, # number of bootstrap heads to use. when 1, this is a normal dqn
     "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
@@ -30,7 +30,7 @@ info = {
     #"EPS_ANNEALING_FRAMES":0, # if it annealing is zero, then it will only use the bootstrap after the first MIN_EXAMPLES_TO_LEARN steps which are random
     "EPS_FINAL_FRAME":0.01,
     "NUM_EVAL_EPISODES":1, # num examples to average in eval
-    "BUFFER_SIZE":int(1e6), # Buffer size for experience replay
+    "BUFFER_SIZE":int(1e4), # Buffer size for experience replay
     "CHECKPOINT_EVERY_EPISODES":1, # how often to write pkl of model and npz of data buffer
     "EVAL_FREQUENCY":2, # how often to run evaluation episodes
     "ADAM_LEARNING_RATE":6.25e-5,
@@ -54,8 +54,7 @@ info = {
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
     "MAX_EPISODES":20000,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
-     "model_loadpath":'',
-    "buffer_loadpath": ''
+     "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
