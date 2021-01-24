@@ -9,7 +9,7 @@ import cv2
 def save_checkpoint(state, filename='model.pkl'):
     print("starting save of model %s" %filename)
     torch.save(state, filename)
-    print("finished save of model %s" %filename)
+    #print("finished save of model %s" %filename)
 
 def seed_everything(seed=1234):
     #random.seed(seed)
