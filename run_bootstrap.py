@@ -23,6 +23,7 @@ from train_utils import *
 from params import *
 
 load_model=False
+load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
                   num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['SEED'],
                   dead_as_end=info['DEAD_AS_END'], max_episode_steps=info['MAX_EPISODE_STEPS'])
@@ -38,15 +39,15 @@ if load_model:
     # these parameters to setup other things
     print('loading model from: %s' %info['model_loadpath'])
     model_dict = torch.load(info['model_loadpath'])
-    info = model_dict['info']
-    info['DEVICE'] = device
+    #info = model_dict['info']
+    #info['DEVICE'] = device
     # set a new random seed
-    info["SEED"] = model_dict['cnt']
-    model_base_filedir = os.path.split(info.model_loadpath)[0]
-    start_step_number = start_last_save = model_dict['cnt']
-    info['loaded_from'] = info.model_loadpath
+    #info["SEED"] = model_dict['cnt']
+    model_base_filedir = os.path.split(info['model_loadpath'])[0]
+    info['loaded_from'] = info['model_loadpath']
     perf = model_dict['perf']
     start_step_number = perf['steps'][-1]
+    start_last_save=start_step_number
 else:
     perf = {'steps':[],
             'avg_rewards':[],
@@ -96,21 +97,20 @@ if info['PRIOR']:
     target_net = NetWithPrior(target_net, prior_net, info['PRIOR_SCALE'])
 target_net.load_state_dict(policy_net.state_dict())
 opt = optim.Adam(policy_net.parameters(), lr=info['ADAM_LEARNING_RATE'])
-if info['model_loadpath'] is not '':
+if load_model:
     # what about random states - they will be wrong now???
-    # TODO - what about target net update cnt
+    # TODO - what about target net update cnt (TODO from johana)
     target_net.load_state_dict(model_dict['target_net_state_dict'])
     policy_net.load_state_dict(model_dict['policy_net_state_dict'])
     opt.load_state_dict(model_dict['optimizer'])
     print("loaded model state_dicts")
-    if info['buffer_loadpath'] == '':
-        info['buffer_loadpath'] = info['model_loadpath'].replace('.pkl', '_train_buffer.npz')
-        print("auto loading buffer from:%s" %info['buffer_loadpath'])
-        try:
-            replay_memory.load_buffer(info['buffer_loadpath'])
-        except Exception as e:
-            print(e)
-            print('not able to load from buffer: %s. exit() to continue with empty buffer' %info['buffer_loadpath'])
+    buffer_loadpath = info['model_loadpath'].replace('.pkl', '_train_buffer.npz')
+    print("auto loading buffer from:%s" %buffer_loadpath)
+    try:
+        replay_memory.load_buffer(buffer_loadpath)
+    except Exception as e:
+        print(e)
+        print('not able to load from buffer: %s. exit() to continue with empty buffer' %buffer_loadpath)
 action_getter = ActionGetter(n_actions=env.num_actions,
                              policy_net=policy_net,
                              eps_initial=info['EPS_INITIAL'],
