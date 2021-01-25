@@ -55,6 +55,7 @@ info = {
     "MAX_EPISODES":20000,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
      "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
+    "dbg_flg":True
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]

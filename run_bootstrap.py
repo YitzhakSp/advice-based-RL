@@ -20,6 +20,7 @@ from replay import ReplayMemory
 import config
 from argparse import ArgumentParser
 from train_utils import *
+from pong_utils import *
 from params import *
 
 load_model=False
@@ -128,7 +129,8 @@ mvars={
 'model_base_filepath':model_base_filepath,
 'model_base_filedir':model_base_filedir,
 'env':env,
-'heads':heads
+'heads':heads,
+'pong_funcs_obj': Pong_funcs()
 }
 train(start_step_number,
       start_last_save,

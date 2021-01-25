@@ -15,6 +15,7 @@ from params import *
 from other_utils import *
 import json
 
+
 class ActionGetter:
     """Determines an action according to an epsilon greedy strategy with annealing epsilon"""
     """This class is from fg91's dqn. TODO put my function back in"""
@@ -224,6 +225,18 @@ def train(step_number,
             ep_eps_list.append(eps)
             next_state, reward, life_lost, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
+            if info['dbg_flg']:
+                frame=next_state[1]
+                frame_prev=next_state[0]
+                ball_position=mvars['pong_funcs_obj'].ball_position(frame)
+                print('ballpos =', ball_position)
+                towards=mvars['pong_funcs_obj'].ball_towards(frame,frame_prev)
+                crit=mvars['pong_funcs_obj'].crit_binary(next_state)
+                #print('towards agent =', towards)
+                print('crit =', crit)
+                time.sleep(1)
+
+
             mvars['replay_memory'].add_experience(action=action,
                                             frame=next_state[-1],
                                             reward=np.sign(reward), # TODO -maybe there should be +1 here
