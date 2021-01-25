@@ -58,7 +58,7 @@ class ReplayMemory:
 
     def load_buffer(self, filepath):
         st = time.time()
-        print("starting load of buffer from %s"%filepath, st)
+        #print("starting load of buffer from %s"%filepath, st)
         npfile = np.load(filepath)
         self.frames = npfile['frames']
         self.actions = npfile['actions']
@@ -74,7 +74,7 @@ class ReplayMemory:
         self.bernoulli_probability = npfile['bernoulli_probability']
         if self.num_heads == 1:
             assert(self.bernoulli_probability == 1.0)
-        print("finished loading buffer", time.time()-st)
+        #print("finished loading buffer", time.time()-st)
         print("loaded buffer current is", self.current)
 
     def add_experience(self, action, frame, reward, terminal):

@@ -23,6 +23,16 @@ from train_utils import *
 from pong_utils import *
 from params import *
 
+print('answer the upcoming questions with y or n')
+long_exp=input("are you running a long experiment (1h +) ?")
+assert(long_exp=='y' or long_exp=='n')
+if long_exp=='y':
+    print('Lets go through the checklist ... ')
+    input('proper choice of device (CPU or GPU) ?')
+    input('load correct model ?')
+    input('correct demonstrator model ?')
+    print('finished checklist !')
+
 load_model=False
 load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
