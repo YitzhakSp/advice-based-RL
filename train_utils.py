@@ -101,7 +101,6 @@ def rolling_average(a, n=5) :
 
 def plot_dict_losses(plot_dict, name='loss_example.png', rolling_length=4, plot_title=''):
     f,ax=plt.subplots(1,1,figsize=(6,6))
-    print('creating plots')
     for n in plot_dict.keys():
         ax.plot(rolling_average(plot_dict[n]['index']), rolling_average(plot_dict[n]['val']), lw=1)
         ax.scatter(rolling_average(plot_dict[n]['index']), rolling_average(plot_dict[n]['val']), label=n, s=3)
@@ -112,6 +111,7 @@ def plot_dict_losses(plot_dict, name='loss_example.png', rolling_length=4, plot_
     plt.close()
 
 def matplotlib_plot_all(p,model_base_filedir):
+    print('creating plots')
     episode_num = len(p['steps'])
     epochs = np.arange(episode_num)
     steps = p['steps']
