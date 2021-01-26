@@ -101,8 +101,8 @@ def rolling_average(a, n=5) :
 
 def plot_dict_losses(plot_dict, name='loss_example.png', rolling_length=4, plot_title=''):
     f,ax=plt.subplots(1,1,figsize=(6,6))
+    print('creating plots')
     for n in plot_dict.keys():
-        print('plotting', n)
         ax.plot(rolling_average(plot_dict[n]['index']), rolling_average(plot_dict[n]['val']), lw=1)
         ax.scatter(rolling_average(plot_dict[n]['index']), rolling_average(plot_dict[n]['val']), label=n, s=3)
     ax.legend()
@@ -136,7 +136,7 @@ def handle_checkpoint(last_save, episode_num, mvars, perf):
                  'episode_num':episode_num,
                  'policy_net_state_dict':mvars['policy_net'].state_dict(),
                  'target_net_state_dict':mvars['target_net'].state_dict(),
-                 'perf':perf
+                'perf':perf
                 }
 
         filename = os.path.abspath(mvars['model_base_filepath'] + ".pkl")
@@ -210,6 +210,7 @@ def train(step_number,
         start_time = time.time()
         episode_reward_sum = 0
         active_head = np.random.randint(info['N_ENSEMBLE'])
+        advice_cnt=0
         if ['COMP_UNCERT']:
             min_uncertainty = compute_uncertainty(state, mvars['policy_net'])
             max_uncertainty=min_uncertainty
@@ -217,11 +218,26 @@ def train(step_number,
         ep_eps_list = []
         ptloss_list = []
         while not terminal:
+            if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
+                #print('computing uncertainty ...')
+                uncertainty=compute_uncertainty(state, mvars['policy_net'])
+                min_uncertainty=min(uncertainty,min_uncertainty)
+                max_uncertainty=max(uncertainty,max_uncertainty)
             if life_lost:
                 action = 1
                 eps = 0
             else:
-                eps,action = action_getter.pt_get_action(step_number, state=state, active_head=active_head)
+                if info['advice_flg'] and advice_required(state,mvars['policy_net'],info['uncert_trh']):
+                    #print('uncert: ',uncertainty)
+                    #print('getting advice')
+                    state_tens = torch.Tensor(state.astype(np.float) / info['NORM_BY'])[None, :].to(info['DEVICE'])
+                    vals=mvars['advice_net'](state_tens,info['advice_head'])
+                    action = torch.argmax(vals, dim=1).item()
+                    advice_cnt+=1
+                else:
+                    #print('uncert: ',uncertainty)
+                    #print('no advice')
+                    eps,action = action_getter.pt_get_action(step_number, state=state,active_head=active_head)
             ep_eps_list.append(eps)
             next_state, reward, life_lost, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
@@ -235,8 +251,6 @@ def train(step_number,
                 #print('towards agent =', towards)
                 print('crit =', crit)
                 time.sleep(1)
-
-
             mvars['replay_memory'].add_experience(action=action,
                                             frame=next_state[-1],
                                             reward=np.sign(reward), # TODO -maybe there should be +1 here
@@ -244,11 +258,7 @@ def train(step_number,
             step_number += 1
             episode_reward_sum += reward
             state = next_state
-            if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
-                #print('computing uncertainty ...')
-                uncertainty=compute_uncertainty(state, mvars['policy_net'])
-                min_uncertainty=min(uncertainty,min_uncertainty)
-                max_uncertainty=max(uncertainty,max_uncertainty)
+
             if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
                 #print('performing learning step')
                 _states, _actions, _rewards, _next_states, _terminal_flags, _masks = mvars['replay_memory'].get_minibatch(info['BATCH_SIZE'])
@@ -258,6 +268,7 @@ def train(step_number,
                 print("++++++++++++++++++++++++++++++++++++++++++++++++")
                 print('updating target network at %s'%step_number)
                 mvars['target_net'].load_state_dict(mvars['policy_net'].state_dict())
+        print('num advice : ',advice_cnt)
         end_time = time.time()
         ep_time = end_time-start_time
         perf['steps'].append(step_number)
@@ -268,6 +279,7 @@ def train(step_number,
         perf['episode_reward'].append(episode_reward_sum)
         perf['episode_times'].append(ep_time)
         perf['episode_relative_times'].append(time.time()-info['START_TIME'])
+        perf['advice_cnt'].append(advice_cnt)
         #perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
         if info['COMP_UNCERT']:
             perf['min_uncertainty'].append(min_uncertainty)
@@ -318,8 +330,6 @@ def evaluate(step_number,action_getter,mvars):
                 # only save first episode
                 frames_for_gif.append(mvars['env'].ale.getScreenRGB())
                 results_for_eval.append("%s, %s, %s, %s" %(action, reward, life_lost, terminal))
-            if not episode_steps%100:
-                print('eval', episode_steps, episode_reward_sum)
             state = next_state
         eval_rewards.append(episode_reward_sum)
 

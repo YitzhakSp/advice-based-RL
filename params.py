@@ -21,8 +21,8 @@ info = {
     "TARGET_UPDATE":10000, # how often to update target network
     "MIN_HISTORY_TO_LEARN":500, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
-    'COMP_UNCERT': True,
-    'UNCERT_FREQ': 4,
+    'COMP_UNCERT': False,
+    'UNCERT_FREQ': 1,
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband
     "EPS_EVAL":0.0, # 0 in osband, .05 in others....
@@ -54,8 +54,12 @@ info = {
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
     "MAX_EPISODES":20000,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
-     "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
-    "dbg_flg":True
+    "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
+    "advicemodel_loadpath": 'models/advicemodel_pong_dummy.pkl',
+    'advice_flg':True,
+    'advice_head':0,
+    'uncert_trh':0.1,
+    "dbg_flg":False
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]

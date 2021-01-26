@@ -37,3 +37,11 @@ def compute_uncertainty(state, qfunc):
     uncertainty=variances_sum/num_actions
     return uncertainty
 
+def advice_required(s,qfunc,uncert_trh):
+    uncertainty=compute_uncertainty(s,qfunc)
+    adv_req=False
+    if uncertainty>uncert_trh:
+        adv_req=True
+    return adv_req
+
+

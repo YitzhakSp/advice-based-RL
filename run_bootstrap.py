@@ -30,11 +30,14 @@ if long_exp=='y':
     print('Lets go through the checklist ... ')
     input('proper choice of device (CPU or GPU) ?')
     input('load correct model ?')
-    input('correct demonstrator model ?')
+    input('compute uncertainty or not ?')
+    input('use advice ?')
+    input('correct advice model ?')
+    input('correct uncertainty treshold ?')
     print('finished checklist !')
 
 load_model=False
-load_model=True
+#load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
                   num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['SEED'],
                   dead_as_end=info['DEAD_AS_END'], max_episode_steps=info['MAX_EPISODE_STEPS'])
@@ -46,8 +49,6 @@ replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              num_heads=info['N_ENSEMBLE'],
                              bernoulli_probability=info['BERNOULLI_PROBABILITY'])
 if load_model:
-    # load data from loadpath - save model load for later. we need some of
-    # these parameters to setup other things
     print('loading model from: %s' %info['model_loadpath'])
     model_dict = torch.load(info['model_loadpath'])
     #info = model_dict['info']
@@ -56,7 +57,7 @@ if load_model:
     #info["SEED"] = model_dict['cnt']
     model_base_filedir = os.path.split(info['model_loadpath'])[0]
     info['loaded_from'] = info['model_loadpath']
-    perf = model_dict['perf']
+    perf=model_dict['perf']
     start_step_number = perf['steps'][-1]
     start_last_save=start_step_number
 else:
@@ -72,7 +73,8 @@ else:
             'eval_rewards':[],
             'eval_steps':[],
             'min_uncertainty':[],
-            'max_uncertainty':[]}
+            'max_uncertainty':[],
+            'advice_cnt':[]}
     start_step_number = 0
     start_last_save = 0
     # make new directory for this run in the case that there is already a
@@ -122,6 +124,16 @@ if load_model:
     except Exception as e:
         print(e)
         print('not able to load from buffer: %s. exit() to continue with empty buffer' %buffer_loadpath)
+advice_net=None
+if info['advice_flg']:
+    print('loading advice model from: %s' %info['advicemodel_loadpath'])
+    model_dict = torch.load(info['advicemodel_loadpath'])
+    advice_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
+                             n_actions=env.num_actions,
+                             network_output_size=info['NETWORK_INPUT_SIZE'][0],
+                             num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
+    if info['PRIOR']:
+        advice_net = NetWithPrior(advice_net, prior_net, info['PRIOR_SCALE'])
 action_getter = ActionGetter(n_actions=env.num_actions,
                              policy_net=policy_net,
                              eps_initial=info['EPS_INITIAL'],
@@ -134,6 +146,7 @@ action_getter = ActionGetter(n_actions=env.num_actions,
 mvars={
 'policy_net':policy_net,
 'target_net':target_net,
+'advice_net':advice_net,
 'replay_memory':replay_memory,
 'opt':opt,
 'model_base_filepath':model_base_filepath,
