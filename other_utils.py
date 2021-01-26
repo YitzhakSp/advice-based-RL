@@ -21,7 +21,7 @@ def get_head_outputs_as_numpy(state,qfunc):
     head_outputs={}
     #loop over heads
     for i,x in enumerate(q_tens):
-        head_outputs['head_'+str(i)]=x.detach().numpy()
+        head_outputs['head_'+str(i)]=x.cpu().detach().numpy()
     return head_outputs
 
 
