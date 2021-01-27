@@ -45,3 +45,15 @@ def advice_required(s,qfunc,uncert_trh):
     return adv_req
 
 
+def firstind_above(mylist,val):
+    for i,x in enumerate(mylist):
+        if x>=val:
+            return i
+    return None
+
+def rolling_average(a, n=5) :
+    if n == 0:
+        return a
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n

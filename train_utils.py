@@ -92,18 +92,13 @@ class ActionGetter:
                 action = data.most_common(1)[0][0]
                 return eps, action
 
-def rolling_average(a, n=5) :
-    if n == 0:
-        return a
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
+
 
 def plot_dict_losses(plot_dict, name='loss_example.png', rolling_length=4, plot_title=''):
     f,ax=plt.subplots(1,1,figsize=(6,6))
-    for n in plot_dict.keys():
-        ax.plot(rolling_average(plot_dict[n]['index']), rolling_average(plot_dict[n]['val']), lw=1)
-        ax.scatter(rolling_average(plot_dict[n]['index']), rolling_average(plot_dict[n]['val']), label=n, s=3)
+    for key in plot_dict.keys():
+        ax.plot(rolling_average(plot_dict[key]['index']), rolling_average(plot_dict[key]['val']), lw=1)
+        ax.scatter(rolling_average(plot_dict[key]['index']), rolling_average(plot_dict[key]['val']), label=key, s=3)
     ax.legend()
     if plot_title != '':
         plt.title(plot_title)
