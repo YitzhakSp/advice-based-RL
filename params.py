@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
@@ -55,10 +55,12 @@ info = {
     "MAX_EPISODES":2000,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
-    "advicemodel_loadpath": 'models/optimal_pong.pkl',
+    "advicemodel_loadpath": 'models/optimal_pong_dummy.pkl',
     'advice_flg':True,
-    'advice_head':0,
-    'uncert_trh':0.1, # for advice
+    'uncert_trh': 0.1,  # for advice
+    'advice_head': 0,
+    'limited_advice_flg':True,
+    'advice_budget':40e3,
     "dbg_flg":False
 
 }

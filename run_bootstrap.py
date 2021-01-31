@@ -34,6 +34,8 @@ if long_exp=='y':
     input('use advice ?')
     input('correct advice model ?')
     input('correct uncertainty treshold ?')
+    input('correct advice budget (if loading model, dont forget to adjust advbudg) ?')
+    input('ask advice only in critical states ?')
     print('finished checklist !')
 
 load_model=False
@@ -48,6 +50,7 @@ replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              batch_size=info['BATCH_SIZE'],
                              num_heads=info['N_ENSEMBLE'],
                              bernoulli_probability=info['BERNOULLI_PROBABILITY'])
+advice_cnt_tot=0
 if load_model:
     print('loading model from: %s' %info['model_loadpath'])
     model_dict = torch.load(info['model_loadpath'])
@@ -60,6 +63,7 @@ if load_model:
     perf=model_dict['perf']
     start_step_number = perf['steps'][-1]
     start_last_save=start_step_number
+    advice_cnt_tot=sum(perf['advice_cnt'])
 else:
     perf = {'steps':[],
             'avg_rewards':[],
@@ -153,7 +157,8 @@ mvars={
 'model_base_filedir':model_base_filedir,
 'env':env,
 'heads':heads,
-'pong_funcs_obj': Pong_funcs()
+'pong_funcs_obj': Pong_funcs(),
+'advice_cnt_tot':advice_cnt_tot
 }
 train(start_step_number,
       start_last_save,

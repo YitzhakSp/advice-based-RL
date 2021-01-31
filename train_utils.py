@@ -196,6 +196,7 @@ def train(step_number,
     replaced 3 loops by 2 loops
     """
     episode_num = len(perf['steps'])
+    advice_cnt_tot=mvars['advice_cnt_tot']
     while episode_num < info['MAX_EPISODES']:
         print('episode '+ str(episode_num))
         terminal = False
@@ -205,7 +206,7 @@ def train(step_number,
         start_time = time.time()
         episode_reward_sum = 0
         active_head = np.random.randint(info['N_ENSEMBLE'])
-        advice_cnt=0
+        advice_cnt_thisep=0
         if ['COMP_UNCERT']:
             min_uncertainty = compute_uncertainty(state, mvars['policy_net'])
             max_uncertainty=min_uncertainty
@@ -222,13 +223,21 @@ def train(step_number,
                 action = 1
                 eps = 0
             else:
-                if info['advice_flg'] and advice_required(state,mvars['policy_net'],info['uncert_trh']):
+                get_advice=False
+                if info['advice_flg']:
+                    if ['advice_limit_flg']:
+                        if advice_cnt_tot<info['advice_budget']:
+                            get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
+                    else:
+                        get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
+                if get_advice:
                     #print('uncert: ',uncertainty)
-                    #print('getting advice')
+                    print('getting advice')
                     state_tens = torch.Tensor(state.astype(np.float) / info['NORM_BY'])[None, :].to(info['DEVICE'])
                     vals=mvars['advice_net'](state_tens,info['advice_head'])
                     action = torch.argmax(vals, dim=1).item()
-                    advice_cnt+=1
+                    advice_cnt_thisep+=1
+                    advice_cnt_tot+=1
                 else:
                     #print('uncert: ',uncertainty)
                     #print('no advice')
@@ -253,7 +262,6 @@ def train(step_number,
             step_number += 1
             episode_reward_sum += reward
             state = next_state
-
             if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
                 #print('performing learning step')
                 _states, _actions, _rewards, _next_states, _terminal_flags, _masks = mvars['replay_memory'].get_minibatch(info['BATCH_SIZE'])
@@ -263,7 +271,7 @@ def train(step_number,
                 print("++++++++++++++++++++++++++++++++++++++++++++++++")
                 print('updating target network at %s'%step_number)
                 mvars['target_net'].load_state_dict(mvars['policy_net'].state_dict())
-        print('num advice : ',advice_cnt)
+        print('num advice : ',advice_cnt_thisep)
         end_time = time.time()
         ep_time = end_time-start_time
         perf['steps'].append(step_number)
@@ -274,7 +282,7 @@ def train(step_number,
         perf['episode_reward'].append(episode_reward_sum)
         perf['episode_times'].append(ep_time)
         perf['episode_relative_times'].append(time.time()-info['START_TIME'])
-        perf['advice_cnt'].append(advice_cnt)
+        perf['advice_cnt'].append(advice_cnt_thisep)
         #perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
         if info['COMP_UNCERT']:
             perf['min_uncertainty'].append(min_uncertainty)
