@@ -230,9 +230,17 @@ def train(step_number,
                             get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
                     else:
                         get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
+                    if info['advice_only_crit']:
+                        crit = mvars['pong_funcs_obj'].crit_binary(state)
+                        get_advice= (get_advice and (crit>=info['crit_trh']))
+                        if info['dbg_flg']:
+                            if crit<info['crit_trh']:
+                                print(get_advice)
+                                print('no adv due to low crit')
+
                 if get_advice:
                     #print('uncert: ',uncertainty)
-                    print('getting advice')
+                    #print('getting advice')
                     state_tens = torch.Tensor(state.astype(np.float) / info['NORM_BY'])[None, :].to(info['DEVICE'])
                     vals=mvars['advice_net'](state_tens,info['advice_head'])
                     action = torch.argmax(vals, dim=1).item()
@@ -246,6 +254,7 @@ def train(step_number,
             next_state, reward, life_lost, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
             if info['dbg_flg']:
+                '''
                 frame=next_state[1]
                 frame_prev=next_state[0]
                 ball_position=mvars['pong_funcs_obj'].ball_position(frame)
@@ -255,6 +264,8 @@ def train(step_number,
                 #print('towards agent =', towards)
                 print('crit =', crit)
                 time.sleep(1)
+                '''
+                xyz=3
             mvars['replay_memory'].add_experience(action=action,
                                             frame=next_state[-1],
                                             reward=np.sign(reward), # TODO -maybe there should be +1 here
