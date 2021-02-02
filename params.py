@@ -61,7 +61,9 @@ info = {
     'advice_head': 0,
     'limited_advice_flg':True,
     'advice_budget':40e3,
-    "dbg_flg":False
+    'advice_only_crit':True,
+    'crit_trh':0.9,
+    "dbg_flg":True
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]

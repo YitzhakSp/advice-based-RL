@@ -13,7 +13,6 @@ import torch.nn.functional as F
 from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
 from params import *
 
-
 def get_head_outputs_as_numpy(state,qfunc):
     state1 = np.expand_dims(state, axis=0)
     state1_tens = torch.Tensor(state1.astype(np.float) / info['NORM_BY']).to(info['DEVICE'])
@@ -23,7 +22,6 @@ def get_head_outputs_as_numpy(state,qfunc):
     for i,x in enumerate(q_tens):
         head_outputs['head_'+str(i)]=x.cpu().detach().numpy()
     return head_outputs
-
 
 def compute_uncertainty(state, qfunc):
     heads_values = get_head_outputs_as_numpy(state, qfunc)
@@ -43,7 +41,6 @@ def advice_required(s,qfunc,uncert_trh):
     if uncertainty>uncert_trh:
         adv_req=True
     return adv_req
-
 
 def firstind_above(mylist,val):
     for i,x in enumerate(mylist):
