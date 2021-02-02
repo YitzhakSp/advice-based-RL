@@ -232,7 +232,7 @@ def train(step_number,
                         get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
                 if get_advice:
                     #print('uncert: ',uncertainty)
-                    print('getting advice')
+                    #print('getting advice')
                     state_tens = torch.Tensor(state.astype(np.float) / info['NORM_BY'])[None, :].to(info['DEVICE'])
                     vals=mvars['advice_net'](state_tens,info['advice_head'])
                     action = torch.argmax(vals, dim=1).item()
