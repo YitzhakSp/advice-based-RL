@@ -1,12 +1,10 @@
 import numpy as np
+from scipy.stats import norm
 x={'a':7}
 seed=6
 np.random.seed(seed)
 np.random.seed(12)
 a='models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl'
-b=a.split('/')
-c=b[0]
-for in range(1,len(b)-1)
-    c+="/"+b[i]
+a=norm.cdf(0.05,loc=0.1,scale=0.02)
 
-print(b[0])
+print(a)

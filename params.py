@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
@@ -55,9 +55,12 @@ info = {
     "MAX_EPISODES":2000,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
-    "advicemodel_loadpath": 'models/optimal_pong.pkl',
+    "advicemodel_loadpath": 'models/optimal_pong_dummy.pkl',
     'advice_flg':True,
+    'seed_advice':1,
+    'uncert_trh_type':'s', #for advice. values: soft(s) or hard(h)
     'uncert_trh': 0.1,  # for advice
+    'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':True,
     'advice_budget':20e3,
@@ -69,3 +72,5 @@ info = {
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
 info['load_time'] = datetime.date.today().ctime()
 info['NORM_BY'] = float(info['NORM_BY'])
+allowed_uncert_trh_types=['h','s']
+assert(info['uncert_trh_type'] in allowed_uncert_trh_types)

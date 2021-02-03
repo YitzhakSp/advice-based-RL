@@ -33,7 +33,7 @@ if long_exp=='y':
     input('compute uncertainty or not ?')
     input('use advice ?')
     input('correct advice model ?')
-    input('correct uncertainty treshold ?')
+    input('correct uncertainty treshold (type and value) ?')
     input('correct advice budget (if loading model, dont forget to adjust advbudg) ?')
     input('ask advice only in critical states ?')
     print('finished checklist !')
@@ -158,7 +158,8 @@ mvars={
 'env':env,
 'heads':heads,
 'pong_funcs_obj': Pong_funcs(),
-'advice_cnt_tot':advice_cnt_tot
+'advice_cnt_tot':advice_cnt_tot,
+'randg_adv':np.random.RandomState(info['seed_advice'])
 }
 train(start_step_number,
       start_last_save,

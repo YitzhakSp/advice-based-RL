@@ -12,14 +12,12 @@ with open(thismodel_dir+'/perf.json', 'r') as f:
 max_steps=2e6
 mypl=plt
 mypl.xlim(right=max_steps)
+mypl.ylim(0.0,0.2)
 mypl.xlabel('steps')
-mypl.ylabel('num_advice')
 #mypl.title('Pong_advice')
-mypl.plot(perf['steps'],perf['advice_cnt'])
-advice_cum=np.cumsum(np.array(perf['advice_cnt']))
-mypl.plot(perf['steps'],advice_cum)
+mypl.plot(perf['steps'],perf['min_uncertainty'])
 mypl.grid(True)
 # attention: always remember this:
 #mypl.show()
-mypl.savefig('num_advice.png')
+mypl.savefig('mypl.png')
 a=7

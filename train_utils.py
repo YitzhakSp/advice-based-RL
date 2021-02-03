@@ -191,10 +191,6 @@ def train(step_number,
           action_getter,
           mvars,
           perf):
-    """
-    modified by yitz
-    replaced 3 loops by 2 loops
-    """
     episode_num = len(perf['steps'])
     advice_cnt_tot=mvars['advice_cnt_tot']
     while episode_num < info['MAX_EPISODES']:
@@ -224,12 +220,13 @@ def train(step_number,
                 eps = 0
             else:
                 get_advice=False
+                potential_advice_state=advice_required(state,mvars['policy_net'],mvars)
                 if info['advice_flg']:
                     if ['advice_limit_flg']:
                         if advice_cnt_tot<info['advice_budget']:
-                            get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
+                            get_advice=potential_advice_state
                     else:
-                        get_advice=advice_required(state,mvars['policy_net'],info['uncert_trh'])
+                        get_advice=potential_advice_state
                     if info['advice_only_crit']:
                         crit = mvars['pong_funcs_obj'].crit_binary(state)
                         get_advice= (get_advice and (crit>=info['crit_trh']))
@@ -237,7 +234,6 @@ def train(step_number,
                             if crit<info['crit_trh']:
                                 print(get_advice)
                                 print('no adv due to low crit')
-
                 if get_advice:
                     #print('uncert: ',uncertainty)
                     #print('getting advice')

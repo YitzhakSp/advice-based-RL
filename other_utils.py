@@ -35,11 +35,17 @@ def compute_uncertainty(state, qfunc):
     uncertainty=variances_sum/num_actions
     return uncertainty
 
-def advice_required(s,qfunc,uncert_trh):
+def advice_required(s,qfunc,mvars):
+    print('correct uncert_sigma ?')
     uncertainty=compute_uncertainty(s,qfunc)
     adv_req=False
-    if uncertainty>uncert_trh:
-        adv_req=True
+    if info['uncert_trh_type']=='h':
+        if uncertainty>info['uncert_trh']:
+            adv_req=True
+    elif info['uncert_trh_type']=='s':
+        x=mvars['randg_adv'].normal(info['uncert_trh'],info['uncert_trh_sigma'])
+        if uncertainty>x:
+            adv_req=True
     return adv_req
 
 def firstind_above(mylist,val):

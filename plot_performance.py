@@ -4,7 +4,7 @@ from other_utils import *
 import json
 import matplotlib.pyplot as plt
 
-thismodel_dir='simulations/advice/'
+thismodel_dir='simulations/advice_budget/with_crit/40K'
 print('loading performance data from '+ thismodel_dir)
 with open(thismodel_dir+'/perf.json', 'r') as f:
     perf = json.load(f)
@@ -24,5 +24,5 @@ mypl.axvline(x= steps_mp, color = 'r')
 mypl.grid(True)
 # attention: always remember this:
 #mypl.show()
-mypl.savefig('more_plots/perfplot_adv.png')
+mypl.savefig('perfplot_adv.png')
 a=7
