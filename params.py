@@ -60,10 +60,10 @@ info = {
     'uncert_trh': 0.1,  # for advice
     'advice_head': 0,
     'limited_advice_flg':True,
-    'advice_budget':40e3,
-    'advice_only_crit':True,
-    'crit_trh':0.9,
-    "dbg_flg":True
+    'advice_budget':20e3,
+    'advice_only_crit':False,
+    'crit_trh':0.9, # for advice
+    "dbg_flg":False
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
