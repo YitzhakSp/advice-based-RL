@@ -36,7 +36,6 @@ def compute_uncertainty(state, qfunc):
     return uncertainty
 
 def advice_required(s,qfunc,mvars):
-    print('correct uncert_sigma ?')
     uncertainty=compute_uncertainty(s,qfunc)
     adv_req=False
     if info['uncert_trh_type']=='h':
