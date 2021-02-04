@@ -5,7 +5,7 @@ import json
 import matplotlib.pyplot as plt
 
 thismodel_dir='simulations/advice_budget/plain/40K'
-thismodel_dir='simulations/no_advice'
+thismodel_dir='simulations/advice/soft_treshold'
 print('loading performance data from '+ thismodel_dir)
 with open(thismodel_dir+'/perf.json', 'r') as f:
     perf = json.load(f)

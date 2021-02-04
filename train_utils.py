@@ -203,6 +203,9 @@ def train(step_number,
         episode_reward_sum = 0
         active_head = np.random.randint(info['N_ENSEMBLE'])
         advice_cnt_thisep=0
+        if info['dbg_flg']:
+            advice_cnt_thisep_hard=0
+            perf['advice_cnt_hard']=[]
         if ['COMP_UNCERT']:
             min_uncertainty = compute_uncertainty(state, mvars['policy_net'])
             max_uncertainty=min_uncertainty
@@ -220,9 +223,11 @@ def train(step_number,
                 eps = 0
             else:
                 get_advice=False
-                potential_advice_state=advice_required(state,mvars['policy_net'],mvars)
+                potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
+                if info['dbg_flg']:
+                    advice_cnt_thisep_hard+=int(advice_required(state,mvars['policy_net'],trh_type='h',mvars=mvars))
                 if info['advice_flg']:
-                    if ['advice_limit_flg']:
+                    if info['limited_advice_flg']:
                         if advice_cnt_tot<info['advice_budget']:
                             get_advice=potential_advice_state
                     else:
@@ -290,6 +295,10 @@ def train(step_number,
         perf['episode_times'].append(ep_time)
         perf['episode_relative_times'].append(time.time()-info['START_TIME'])
         perf['advice_cnt'].append(advice_cnt_thisep)
+        if info['dbg_flg']:
+            perf['advice_cnt_hard'].append(advice_cnt_thisep_hard)
+            print('advice_hard:', advice_cnt_thisep_hard)
+            print('advice_soft:', advice_cnt_thisep)
         #perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
         if info['COMP_UNCERT']:
             perf['min_uncertainty'].append(min_uncertainty)
