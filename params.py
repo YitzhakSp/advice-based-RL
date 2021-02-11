@@ -52,7 +52,7 @@ info = {
     "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
-    "MAX_EPISODES":2000,
+    "MAX_EPISODES":1200,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
     "advicemodel_loadpath": 'models/optimal_pong.pkl',
@@ -62,8 +62,8 @@ info = {
     'uncert_trh': 0.1,  # for advice
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
-    'limited_advice_flg':False,
-    'advice_budget':20e3,
+    'limited_advice_flg':True,
+    'advice_budget':500,
     'advice_only_crit':False,
     'crit_trh':0.9, # for advice
     "dbg_flg":False
