@@ -63,8 +63,8 @@ info = {
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':True,
-    'advice_budget':500,
-    'advice_only_crit':False,
+    'advice_budget':2e3,
+    'advice_only_crit':True,
     'crit_trh':0.9, # for advice
     "dbg_flg":False
 

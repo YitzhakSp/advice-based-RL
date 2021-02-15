@@ -110,6 +110,7 @@ def matplotlib_plot_all(p,model_base_filedir):
     episode_num = len(p['steps'])
     epochs = np.arange(episode_num)
     steps = p['steps']
+    '''
     plot_dict_losses({'episode steps':{'index':epochs,'val':p['episode_step']}}, name=os.path.join(model_base_filedir, 'episode_step.png'), rolling_length=0)
     plot_dict_losses({'episode steps':{'index':epochs,'val':p['episode_relative_times']}}, name=os.path.join(model_base_filedir, 'episode_relative_times.png'), rolling_length=10)
     plot_dict_losses({'episode head':{'index':epochs, 'val':p['episode_head']}}, name=os.path.join(model_base_filedir, 'episode_head.png'), rolling_length=0)
@@ -119,6 +120,7 @@ def matplotlib_plot_all(p,model_base_filedir):
     plot_dict_losses({'episode reward':{'index':epochs, 'val':p['episode_reward']}}, name=os.path.join(model_base_filedir, 'episode_reward.png'), rolling_length=0)
     plot_dict_losses({'episode times':{'index':epochs,'val':p['episode_times']}}, name=os.path.join(model_base_filedir, 'episode_times.png'), rolling_length=5)
     #plot_dict_losses({'steps avg reward':{'index':steps,'val':p['avg_rewards']}}, name=os.path.join(model_base_filedir, 'steps_avg_reward.png'), rolling_length=0)
+    '''
     plot_dict_losses({'eval rewards':{'index':p['eval_steps'], 'val':p['eval_rewards']}}, name=os.path.join(model_base_filedir, 'eval_rewards_steps.png'), rolling_length=0)
 
 def handle_checkpoint(last_save, episode_num, mvars, perf):
@@ -288,13 +290,13 @@ def train(step_number,
         end_time = time.time()
         ep_time = end_time-start_time
         perf['steps'].append(step_number)
-        perf['episode_step'].append(step_number-start_steps)
-        perf['episode_head'].append(active_head)
-        perf['eps_list'].append(np.mean(ep_eps_list))
-        perf['episode_loss'].append(np.mean(ptloss_list))
-        perf['episode_reward'].append(episode_reward_sum)
-        perf['episode_times'].append(ep_time)
-        perf['episode_relative_times'].append(time.time()-info['START_TIME'])
+        #perf['episode_step'].append(step_number-start_steps)
+        #perf['episode_head'].append(active_head)
+        #perf['eps_list'].append(np.mean(ep_eps_list))
+        #perf['episode_loss'].append(np.mean(ptloss_list))
+        #perf['episode_reward'].append(episode_reward_sum)
+        #perf['episode_times'].append(ep_time)
+        #perf['episode_relative_times'].append(time.time()-info['START_TIME'])
         perf['advice_cnt'].append(advice_cnt_thisep)
         if info['dbg_flg']:
             perf['advice_cnt_hard'].append(advice_cnt_thisep_hard)
