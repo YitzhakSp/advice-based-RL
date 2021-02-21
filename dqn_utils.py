@@ -11,7 +11,7 @@ def save_checkpoint(state, filename='model.pkl'):
     torch.save(state, filename)
     #print("finished save of model %s" %filename)
 
-def seed_everything(seed=1234):
+def seed_everything(seed):
     #random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)

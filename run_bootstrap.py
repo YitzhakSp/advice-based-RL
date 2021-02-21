@@ -95,7 +95,7 @@ else:
 model_base_filepath = os.path.join(model_base_filedir, info['NAME'])
 write_info_file(info, model_base_filepath, start_step_number)
 heads = list(range(info['N_ENSEMBLE']))
-seed_everything(info["SEED"])
+seed_everything(info["seed_torch_and_np"])
 policy_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
                                   n_actions=env.num_actions,
                                   network_output_size=info['NETWORK_INPUT_SIZE'][0],
@@ -140,7 +140,7 @@ if info['advice_flg']:
         advice_net = NetWithPrior(advice_net, prior_net, info['PRIOR_SCALE'])
 action_getter = ActionGetter(n_actions=env.num_actions,
                              policy_net=policy_net,
-                             random_seed=info['seed_whenexpl'],
+                             random_seed=info['seed_expl'],
                              eps_initial=info['EPS_INITIAL'],
                              eps_final=info['EPS_FINAL'],
                              eps_final_frame=info['EPS_FINAL_FRAME'],

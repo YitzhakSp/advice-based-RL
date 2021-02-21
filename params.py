@@ -46,6 +46,7 @@ info = {
     "CLIP_GRAD":5, # Gradient clipping setting
     "seed_env":101,
     'seed_expl':1,
+    'seed_torch_and_np':1234,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
