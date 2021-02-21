@@ -19,9 +19,9 @@ import json
 class ActionGetter:
     """Determines an action according to an epsilon greedy strategy with annealing epsilon"""
     """This class is from fg91's dqn. TODO put my function back in"""
-    def __init__(self, n_actions, policy_net,eps_initial=1, eps_final=0.1, eps_final_frame=0.01,
+    def __init__(self, n_actions, policy_net,random_seed,eps_initial=1, eps_final=0.1, eps_final_frame=0.01,
                  eps_evaluation=0.0, eps_annealing_frames=100000,
-                 replay_memory_start_size=50000, max_steps=25000000, random_seed=122):
+                 replay_memory_start_size=50000, max_steps=25000000,):
         """
         Args:
             n_actions: Integer, number of possible actions

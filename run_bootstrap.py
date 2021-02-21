@@ -41,7 +41,7 @@ if long_exp=='y':
 load_model=False
 #load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
-                  num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['SEED'],
+                  num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['seed_env'],
                   dead_as_end=info['DEAD_AS_END'], max_episode_steps=info['MAX_EPISODE_STEPS'])
 replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              frame_height=info['NETWORK_INPUT_SIZE'][0],
@@ -140,6 +140,7 @@ if info['advice_flg']:
         advice_net = NetWithPrior(advice_net, prior_net, info['PRIOR_SCALE'])
 action_getter = ActionGetter(n_actions=env.num_actions,
                              policy_net=policy_net,
+                             random_seed=info['seed_whenexpl'],
                              eps_initial=info['EPS_INITIAL'],
                              eps_final=info['EPS_FINAL'],
                              eps_final_frame=info['EPS_FINAL_FRAME'],

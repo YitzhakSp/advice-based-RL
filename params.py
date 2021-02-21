@@ -44,7 +44,8 @@ info = {
     "GAMMA":.99, # Gamma weight in Q update
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
-    "SEED":101,
+    "seed_env":101,
+    'seed_expl':1,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
@@ -63,7 +64,7 @@ info = {
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':True,
-    'advice_budget':500,
+    'advice_budget':10e3,
     'advice_only_crit':True,
     'crit_trh':0.9, # for advice
     "dbg_flg":False
