@@ -50,11 +50,11 @@ info = {
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
-    "MAX_STEPS":int(50e6), # 50e6 steps is 200e6 frames
+    "MAX_STEPS":int(2e6), # 50e6 steps is 200e6 frames
     "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
-    "MAX_EPISODES":1200,
+  #  "MAX_EPISODES":1200,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath":'models/FRANKbootstrap_fasteranneal_pong16/FRANKbootstrap_fasteranneal_pong.pkl',
     "advicemodel_loadpath": 'models/optimal_pong.pkl',
@@ -65,8 +65,8 @@ info = {
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':True,
-    'advice_budget':10e3,
-    'advice_only_crit':False,
+    'advice_budget':5e3,
+    'advice_only_crit':True,
     'crit_trh':0.9, # for advice
     "dbg_flg":False
 

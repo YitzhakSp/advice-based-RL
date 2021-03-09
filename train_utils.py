@@ -195,7 +195,7 @@ def train(step_number,
           perf):
     episode_num = len(perf['steps'])
     advice_cnt_tot=mvars['advice_cnt_tot']
-    while episode_num < info['MAX_EPISODES']:
+    while step_number < info['MAX_STEPS']:
         print('episode '+ str(episode_num))
         print('steps total: '+ str(step_number))
         terminal = False
