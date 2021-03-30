@@ -33,6 +33,7 @@ if long_exp=='y':
     input('compute uncertainty or not ?')
     input('use advice ?')
     input('correct advice model ?')
+    input('limited advice ?')
     input('correct uncertainty treshold (type and value) ?')
     input('correct advice budget (if loading model, dont forget to adjust advbudg) ?')
     input('ask advice only in critical states ?')
