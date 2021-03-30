@@ -45,12 +45,12 @@ info = {
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
     "seed_env":101,
-    'seed_expl':4, #default:122 (used before 20feb)
+    'seed_expl':5, #default:122 (used before 20feb)
     'seed_torch_and_np':1234,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
-    "MAX_STEPS":int(2e6), # 50e6 steps is 200e6 frames
+    "MAX_STEPS":int(2.5e6), # 50e6 steps is 200e6 frames
     "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
@@ -61,12 +61,12 @@ info = {
     'advice_flg':True,
     'seed_advice':1,
     'uncert_trh_type':'s', #for advice. values: soft(s) or hard(h)
-    'uncert_trh': 0.1,  # for advice
+    'uncert_trh': 0.08,  # for advice
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
-    'limited_advice_flg':True,
-    'advice_budget':5e3,
-    'advice_only_crit':True,
+    'limited_advice_flg':False,
+    'advice_budget':50e3,
+    'advice_only_crit':False,
     'crit_trh':0.9, # for advice
     "dbg_flg":False
 

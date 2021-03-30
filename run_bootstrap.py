@@ -33,6 +33,7 @@ if long_exp=='y':
     input('compute uncertainty or not ?')
     input('use advice ?')
     input('correct advice model ?')
+    input('limited advice ?')
     input('correct uncertainty treshold (type and value) ?')
     input('correct advice budget (if loading model, dont forget to adjust advbudg) ?')
     input('ask advice only in critical states ?')
@@ -139,7 +140,10 @@ if info['advice_flg']:
     if info['PRIOR']:
         advice_net = NetWithPrior(advice_net, prior_net, info['PRIOR_SCALE'])
     advice_net.load_state_dict(model_dict['policy_net_state_dict'])
+<<<<<<< HEAD
 
+=======
+>>>>>>> b6a39a1a6c0cf5a886269b6b67233bd0230a82ce
 action_getter = ActionGetter(n_actions=env.num_actions,
                              policy_net=policy_net,
                              random_seed=info['seed_expl'],
