@@ -4,10 +4,10 @@ from other_utils import *
 import json
 import matplotlib.pyplot as plt
 
-thismodel_dir='simulations/advice_budget/plain/40K'
-thismodel_dir='simulations/advice/soft_treshold_2'
+thismodel_dir='simulations/no_advice'
+#thismodel_dir='simulations/advice/unlimited'
 print('loading performance data from '+ thismodel_dir)
-with open(thismodel_dir+'/perf.json', 'r') as f:
+with open(thismodel_dir+'/perf_1.json', 'r') as f:
     perf = json.load(f)
 max_steps=2e6
 mypl=plt
