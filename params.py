@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:

@@ -5,10 +5,10 @@ import json
 import matplotlib.pyplot as plt
 
 #thismodel_dir='simulations/advice/soft_treshold'
-#thismodel_dir='simulations/no_advice/'
-thismodel_dir='simulations/advice_budget/plain/10K'
+thismodel_dir='simulations/no_advice'
+thismodel_dir='simulations/advice/unlimited'
 #thismodel_dir='simulations/advice_budget/with_crit/5K'
-seeds=[1,2,3,4,122]
+seeds=[1,2,3,4,5]
 #seeds=[4]
 print('loading performance data from '+ thismodel_dir)
 max_steps=2e6

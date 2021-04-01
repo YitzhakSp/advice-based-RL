@@ -34,7 +34,11 @@ action_getter = ActionGetter(n_actions=env.num_actions,
                              eps_evaluation=info['EPS_EVAL'],
                              replay_memory_start_size=info['MIN_HISTORY_TO_LEARN'],
                              max_steps=info['MAX_STEPS'])
+<<<<<<< HEAD
 stepnum_dummy=1
 for i in range(5):
     print ('evaluation num ', str(i))
     evaluate(stepnum_dummy,action_getter,mvars)
+=======
+evaluate(1,action_getter,mvars)
+>>>>>>> 6419b75059acef773c88a967ec254ea57d55bb12
