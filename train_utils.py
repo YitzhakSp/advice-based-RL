@@ -298,6 +298,7 @@ def train(step_number,
         #perf['episode_times'].append(ep_time)
         #perf['episode_relative_times'].append(time.time()-info['START_TIME'])
         perf['advice_cnt'].append(advice_cnt_thisep)
+        print('episode score: '+str(episode_reward_sum))
         if info['dbg_flg']:
             perf['advice_cnt_hard'].append(advice_cnt_thisep_hard)
             print('advice_hard:', advice_cnt_thisep_hard)
