@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 files=['simulations/no_advice/avg_rewards.npy',
-        'simulations/advice/unlimited/avg_rewards.npy'
+        'simulations/advice/unlimited_hardtrh/0.06/avg_rewards.npy'
        ]
 for f in files:
     x = np.load(f)
