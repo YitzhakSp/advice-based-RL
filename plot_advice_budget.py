@@ -5,7 +5,7 @@ import json
 import matplotlib.pyplot as plt
 
 #thismodel_dir='simulations/no_advice'
-thismodel_dir='simulations/advice/unlimited_hardtrh/0.06'
+thismodel_dir='simulations/advice/unlimited_hardtrh/0.10'
 avg=True
 print('loading performance data from '+ thismodel_dir)
 with open(thismodel_dir+'/perf_3.json', 'r') as f:
@@ -19,6 +19,7 @@ if avg:
     mypl.xlabel('episodes')
     avg_advice_cnt = np.load(thismodel_dir+'/avg_advice_cnt.npy')
     advice_cum=np.cumsum(avg_advice_cnt)
+    mypl.plot(advice_cum)
 else:
     print("plotting advice_budget for 1 run ...")
     max_steps = 2.5e6
