@@ -61,7 +61,7 @@ info = {
     'advice_flg':True,
     'seed_advice':1,
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
-    'uncert_trh': 0.06,  # for advice
+    'uncert_trh': 0.05,  # for advice
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':False,
