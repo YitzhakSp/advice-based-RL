@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 #thismodel_dir='simulations/advice/soft_treshold'
 #thismodel_dir='simulations/no_advice'
-thismodel_dir='simulations/advice/unlimited_hardtrh/0.10'
+thismodel_dir='simulations/advice/unlimited_hardtrh/0.05'
 seeds=[1,2,3,4,5]
 #seeds=[4]
 print('loading performance data from '+ thismodel_dir)
@@ -20,7 +20,6 @@ for seed in seeds:
         perf = json.load(f)
     min_eval_episodes = min(min_eval_episodes, len(perf['eval_rewards']))
     min_train_episodes = min(min_train_episodes, len(perf['steps']))
-
 sum_eval_rewards=np.zeros(min_eval_episodes)
 sum_advice_cnt=np.zeros(min_train_episodes)
 for seed in seeds:
