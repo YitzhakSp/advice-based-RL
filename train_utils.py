@@ -138,7 +138,7 @@ def handle_checkpoint(last_save, episode_num, mvars, perf):
 
         filename = os.path.abspath(mvars['model_base_filepath'] + ".pkl")
         save_checkpoint(model_state, filename)
-        with open(mvars['model_base_filedir']+'/perf.json', 'w') as fp:
+        with open(mvars['model_base_filedir']+'/perf_'+str(info['seed_expl'])+'.json', 'w') as fp:
             json.dump(perf, fp)
         # npz will be added
         buff_filename = os.path.abspath(mvars['model_base_filepath'] + "_train_buffer" )
