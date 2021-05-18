@@ -1,11 +1,14 @@
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-
-files=['simulations/no_advice/avg_rewards.npy',
-        'simulations/advice/unlimited/avg_rewards.npy'
+eval_freq=2 #evaluation episode once every x episodes
+files=[('simulations/no_advice/avg_rewards_smooth.npy','no_adv'),
+      ('simulations/advice/unlimited_hardtrh/0.05/avg_rewards_smooth.npy','adv')
        ]
 for f in files:
-    x = np.load(f)
-    plt.plot(x)
+    y = np.load(f[0])
+    x=np.arange(0,eval_freq*len(y),eval_freq)
+    plt.plot(x,y,label=f[1])
+    plt.legend()
+
 plt.savefig('rewards.png')

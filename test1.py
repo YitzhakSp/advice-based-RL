@@ -1,11 +1,8 @@
 import json
 import matplotlib.pyplot as plt
-import numpy as np
+from other_utils import *
 
-files=['simulations/no_advice/avg_rewards.npy',
-        'simulations/advice/unlimited/avg_rewards.npy'
-       ]
-for f in files:
-    x = np.load(f)
-    plt.plot(x)
-plt.savefig('rewards.png')
+import numpy as np
+x=np.arange(10,50)
+print(x)
+a=7
