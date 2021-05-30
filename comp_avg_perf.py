@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 #thismodel_dir='simulations/advice/soft_treshold'
 #thismodel_dir='simulations/no_advice'
-thismodel_dir='simulations/advice/unlimited_hardtrh/0.04'
+thismodel_dir='simulations/advice/limited/0.04'
 seeds=[1,2,3,4,5]
 #seeds=[4]
 print('loading performance data from '+ thismodel_dir)
@@ -31,6 +31,7 @@ for seed in seeds:
     sum_advice_cnt+=advice_cnt
 avg_eval_rewards=sum_eval_rewards/len(seeds)
 avg_advice_cnt=sum_advice_cnt/len(seeds)
+print('saving avg rewards ...')
 np.save(thismodel_dir+'/avg_rewards.npy',avg_eval_rewards)
 np.save(thismodel_dir+'/avg_advice_cnt.npy',avg_advice_cnt)
 
