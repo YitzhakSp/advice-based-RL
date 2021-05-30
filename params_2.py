@@ -45,7 +45,7 @@ info = {
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
     "seed_env":101,
-    'seed_expl':5, #default:122 (used before 20feb)
+    'seed_expl':4, #default:122 (used before 20feb)
     'seed_torch_and_np':1234,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
@@ -58,14 +58,14 @@ info = {
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath": 'ku',
     "advicemodel_loadpath": 'models/optimal_pong.pkl',
-    'advice_flg':True,
+    'advice_flg':False,
     'seed_advice':1,
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
-    'uncert_trh': 0.04,  # for advice
+    'uncert_trh': 0.05,  # for advice
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':True,
-    'advice_budget':150e3,
+    'advice_budget':70e3,
     'advice_only_crit':False,
     'crit_trh':0.9, # for advice
     "dbg_flg":False

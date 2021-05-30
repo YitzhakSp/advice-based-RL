@@ -11,7 +11,7 @@ torch.set_num_threads(2)
 import torch.nn as nn
 import torch.nn.functional as F
 from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
-from params import *
+#from params import *
 from other_utils import *
 import json
 
