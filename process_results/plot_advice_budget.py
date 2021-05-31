@@ -30,5 +30,5 @@ else:
     advice_cum=np.cumsum(np.array(perf['advice_cnt']))
     mypl.plot(perf['steps'],advice_cum)
 mypl.grid(True)
-mypl.savefig('num_advice.png')
+mypl.savefig('plots/num_advice.png')
 a=7

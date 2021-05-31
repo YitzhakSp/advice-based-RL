@@ -12,4 +12,4 @@ for f in files:
     plt.plot(x,y,label=f[1])
     plt.legend()
 print('saving rewards plot ...')
-plt.savefig('rewards.png')
+plt.savefig('plots/rewards.png')
