@@ -45,7 +45,7 @@ info = {
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
     "seed_env":101,
-    'seed_expl':2, #default:122 (used before 20feb)
+    'seed_expl':5, #default:122 (used before 20feb)
     'seed_torch_and_np':1234,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
@@ -66,7 +66,7 @@ info = {
     'advice_head': 0,
     'limited_advice_flg':True,
     'advice_budget':150e3,
-    'advice_only_crit':False,
+    'advice_only_crit':True,
     'crit_trh':0.9, # for advice
     "dbg_flg":False
 
