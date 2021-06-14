@@ -37,6 +37,7 @@ if long_exp=='y':
     input('correct uncertainty treshold (type and value) ?')
     input('correct advice budget (if loading model, dont forget to adjust advbudg) ?')
     input('ask advice only in critical states ?')
+    input('correct criticality type ?')
     print('finished checklist !')
 
 load_model=False

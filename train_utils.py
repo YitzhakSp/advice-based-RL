@@ -227,8 +227,6 @@ def train(step_number,
             else:
                 get_advice=False
                 potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
-                if info['dbg_flg']:
-                    advice_cnt_thisep_hard+=int(advice_required(state,mvars['policy_net'],trh_type='h',mvars=mvars))
                 if info['advice_flg']:
                     if info['limited_advice_flg']:
                         if advice_cnt_tot<info['advice_budget']:
@@ -236,7 +234,7 @@ def train(step_number,
                     else:
                         get_advice=potential_advice_state
                     if info['advice_only_crit']:
-                        crit = mvars['pong_funcs_obj'].crit_binary(state)
+                        crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
                         get_advice= (get_advice and (crit>=info['crit_trh']))
                         if info['dbg_flg']:
                             if crit<info['crit_trh']:
@@ -258,17 +256,17 @@ def train(step_number,
             next_state, reward, life_lost, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
             if info['dbg_flg']:
-                '''
+
                 frame=next_state[1]
                 frame_prev=next_state[0]
                 ball_position=mvars['pong_funcs_obj'].ball_position(frame)
                 print('ballpos =', ball_position)
                 towards=mvars['pong_funcs_obj'].ball_towards(frame,frame_prev)
-                crit=mvars['pong_funcs_obj'].crit_binary(next_state)
+                crit=mvars['pong_funcs_obj'].critfunc(next_state,info['crittype'])
                 #print('towards agent =', towards)
                 print('crit =', crit)
-                time.sleep(1)
-                '''
+                time.sleep(0.5)
+
                 xyz=3
             mvars['replay_memory'].add_experience(action=action,
                                             frame=next_state[-1],
