@@ -66,7 +66,7 @@ info = {
     'advice_head': 0,
     'limited_advice_flg':True,
     'advice_budget':150e3,
-    'advice_only_crit':True,
+    'crit_how':1, # 1: nocrit, 2: crit_and_incert, 3: crit*uncert
     'crittype':2, # (1,binary), (2,bothdir)
     'crit_trh':0.9, # for advice
     "dbg_flg":False

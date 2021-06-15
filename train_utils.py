@@ -226,20 +226,20 @@ def train(step_number,
                 eps = 0
             else:
                 get_advice=False
-                potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
+                #potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
                 if info['advice_flg']:
-                    if info['limited_advice_flg']:
-                        if advice_cnt_tot<info['advice_budget']:
-                            get_advice=potential_advice_state
-                    else:
-                        get_advice=potential_advice_state
-                    if info['advice_only_crit']:
+                    uncertainty = compute_uncertainty(state, mvars['policy_net'])
+                    if info['crit_how']==1:
+                        if uncertainty >= info['uncert_trh']:
+                            get_advice=True
+                    elif info['crit_how']==2:
                         crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
-                        get_advice= (get_advice and (crit>=info['crit_trh']))
-                        if info['dbg_flg']:
-                            if crit<info['crit_trh']:
-                                print(get_advice)
-                                print('no adv due to low crit')
+                        get_advice= ((uncertainty >= info['uncert_trh']) and (crit>=info['crit_trh']))
+                    elif info['crit_how']==3:
+                        crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
+                        get_advice=((crit*uncertainty)>=info['uncert_trh'])
+                    if info['limited_advice_flg'] and advice_cnt_tot > info['advice_budget']:
+                        get_advice = False
                 if get_advice:
                     #print('uncert: ',uncertainty)
                     #print('getting advice')
