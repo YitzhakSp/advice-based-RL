@@ -25,9 +25,7 @@ class Environment(object):
                  no_op_start=30,
                  rand_seed=393,
                  dead_as_end=True,
-                 max_episode_steps=18000,
                  autofire=False):
-        self.max_episode_steps = max_episode_steps
         self.random_state = np.random.RandomState(rand_seed+15)
         self.ale = self._init_ale(rand_seed, rom_file)
         # normally (160, 210)
@@ -123,9 +121,6 @@ class Environment(object):
             self.end = True
             lives_dead = True
         self.steps +=1
-        if self.steps >= self.max_episode_steps:
-            self.end = True
-            lives_dead = True
         self.frame_queue.append(self._get_current_frame())
         self.total_reward += reward
         a = np.array(self.frame_queue)

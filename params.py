@@ -1,16 +1,16 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
     device = 'cpu'
 print("running on %s"%device)
+game_name='ms_pacman'
 info = {
-    #"GAME":'roms/breakout.bin', # gym prefix
-    "GAME":'roms/pong.bin', # gym prefix
+    "GAME":'roms/'+game_name+'.bin', # gym prefix
     "DEVICE":device, #cpu vs gpu set by argument
-    "NAME":'FRANKbootstrap_fasteranneal_pong', # start files with name
+    "NAME":game_name+'_model', # start files with name
     "DUELING":True, # use dueling dqn
     "DOUBLE_DQN":True, # use double dqn
     "PRIOR":True, # turn on to use randomized prior
@@ -51,14 +51,14 @@ info = {
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
     "MAX_STEPS":int(2.5e6), # 50e6 steps is 200e6 frames
-    "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
+ #   "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
   #  "MAX_EPISODES":1200,
-    "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
+    "DEAD_AS_END":False, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath": 'ku',
-    "advicemodel_loadpath": 'models/optimal_pong.pkl',
-    'advice_flg':True,
+    "advicemodel_loadpath": 'models/optimal_pong_dummy.pkl',
+    'advice_flg':False,
     'seed_advice':1,
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
     'uncert_trh': 0.02,  # for advice
@@ -66,7 +66,7 @@ info = {
     'advice_head': 0,
     'limited_advice_flg':True,
     'advice_budget':150e3,
-    'crit_how':3, # 1: nocrit, 2: crit_and_uncert, 3: crit*uncert
+    'crit_how':1, # 1: nocrit, 2: crit_and_uncert, 3: crit*uncert
     'crittype':2, # (1,binary), (2,bothdir)
     'crit_trh':0.9, # for advice
     "dbg_flg":False

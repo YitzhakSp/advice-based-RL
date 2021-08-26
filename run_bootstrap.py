@@ -44,7 +44,7 @@ load_model=False
 #load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
                   num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['seed_env'],
-                  dead_as_end=info['DEAD_AS_END'], max_episode_steps=info['MAX_EPISODE_STEPS'])
+                  dead_as_end=info['DEAD_AS_END'])
 replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              frame_height=info['NETWORK_INPUT_SIZE'][0],
                              frame_width=info['NETWORK_INPUT_SIZE'][1],
