@@ -3,6 +3,6 @@ import matplotlib.pyplot as plt
 from other_utils import *
 
 import numpy as np
-x=np.arange(10,50)
-print(x)
+x=divmod(102,50)
+print(x[1])
 a=7

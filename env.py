@@ -10,10 +10,14 @@ import cv2
 #def preprocess_frame(observ, output_size):
 #    return resize(rgb2gray(observ),(output_size, output_size)).astype(np.float32, copy=False)
 
+orig_frame_size=(210,160)
 # opencv is ~3x faster than skimage
-def cv_preprocess_frame(observ, output_size):
+def cv_preprocess_frame(observ, output_size,modify_frame_size_flg):
     gray = cv2.cvtColor(observ, cv2.COLOR_RGB2GRAY)
-    output = cv2.resize(gray, (output_size, output_size), interpolation=cv2.INTER_NEAREST)
+    if modify_frame_size_flg:
+        output = cv2.resize(gray, (output_size[0], output_size[1]), interpolation=cv2.INTER_NEAREST)
+    else:
+        output=gray
     return output
 
 class Environment(object):
@@ -21,7 +25,8 @@ class Environment(object):
                  rom_file,
                  frame_skip=4,
                  num_frames=4,
-                 frame_size=84,
+                 modify_frame_size_flg=True,
+                 frame_size=(84,84), # relevant only if modify_frame_size_flg==True
                  no_op_start=30,
                  rand_seed=393,
                  dead_as_end=True,
@@ -30,13 +35,15 @@ class Environment(object):
         self.ale = self._init_ale(rand_seed, rom_file)
         # normally (160, 210)
         self.actions = self.ale.getMinimalActionSet()
-
         self.frame_skip = frame_skip
         self.num_frames = num_frames
-        self.frame_size = frame_size
+        self.modify_frame_size_flg=modify_frame_size_flg
+        if modify_frame_size_flg:
+            self.frame_size = frame_size
+        else:
+            self.frame_size = orig_frame_size
         self.no_op_start = no_op_start
         self.dead_as_end = dead_as_end
-
         self.total_reward = 0
         screen_width, screen_height = self.ale.getScreenDims()
         self.prev_screen = np.zeros(
@@ -64,7 +71,7 @@ class Environment(object):
         # global glb_counter
         screen = self.ale.getScreenRGB()
         max_screen = np.maximum(self.prev_screen, screen)
-        frame = cv_preprocess_frame(max_screen, self.frame_size)
+        frame = cv_preprocess_frame(max_screen, self.frame_size,self.modify_frame_size_flg)
         return frame
 
     def reset(self):
@@ -74,7 +81,7 @@ class Environment(object):
         self.gray_plot_frames = []
         for _ in range(self.num_frames - 1):
             self.frame_queue.append(
-                np.zeros((self.frame_size, self.frame_size), dtype=np.uint8))
+                np.zeros((self.frame_size[0], self.frame_size[1]), dtype=np.uint8))
 
         # steps are in steps the agent sees
         self.ale.reset_game()
