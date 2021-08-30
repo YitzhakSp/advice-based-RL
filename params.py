@@ -6,7 +6,7 @@ if cuda:
 else:
     device = 'cpu'
 print("running on %s"%device)
-game_name='ms_pacman'
+game_name='gopher'
 info = {
     "GAME":'roms/'+game_name+'.bin', # gym prefix
     "DEVICE":device, #cpu vs gpu set by argument
@@ -55,9 +55,9 @@ info = {
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
   #  "MAX_EPISODES":1200,
-    "DEAD_AS_END":False, # do you send finished=true to agent while training when it loses a life,
+    "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath": 'ku',
-    "advicemodel_loadpath": 'models/optimal_pong_dummy.pkl',
+    "advicemodel_loadpath": 'models/optimal_gopher_dummy.pkl',
     'advice_flg':False,
     'seed_advice':1,
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
