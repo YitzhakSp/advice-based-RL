@@ -9,8 +9,6 @@ print("running on %s"%device)
 game_name='gopher'
 info = {
     "GAME":'roms/'+game_name+'.bin', # gym prefix
-    'print_stepnum':True,
-    'printstepnum_freq':100,
     "DEVICE":device, #cpu vs gpu set by argument
     "NAME":game_name+'_model', # start files with name
     "DUELING":True, # use dueling dqn
@@ -21,7 +19,7 @@ info = {
     "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
-    "MIN_HISTORY_TO_LEARN":500, # in steps
+    "MIN_HISTORY_TO_LEARN":500e3, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
     'COMP_UNCERT': False,
     'UNCERT_FREQ': 1,

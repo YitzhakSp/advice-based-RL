@@ -8,7 +8,7 @@ import cv2
 #from skimage.color import rgb2gray
 #from imageio import imwrite
 #def preprocess_frame(observ, output_size):
-#    return resize(rgb2gray(observ),(output_size, output_size)).astype(np.float32, copy=False)
+# return resize(rgb2gray(observ),(output_size, output_size)).astype(np.float32, copy=False)
 
 orig_frame_size=(210,160)
 # opencv is ~3x faster than skimage
@@ -30,6 +30,7 @@ class Environment(object):
                  no_op_start=30,
                  rand_seed=393,
                  dead_as_end=True,
+                 max_episode_steps=27e3,
                  autofire=False):
         self.random_state = np.random.RandomState(rand_seed+15)
         self.ale = self._init_ale(rand_seed, rom_file)
@@ -37,6 +38,7 @@ class Environment(object):
         self.actions = self.ale.getMinimalActionSet()
         self.frame_skip = frame_skip
         self.num_frames = num_frames
+        self.max_episode_steps=max_episode_steps
         self.modify_frame_size_flg=modify_frame_size_flg
         if modify_frame_size_flg:
             self.frame_size = frame_size
@@ -128,6 +130,9 @@ class Environment(object):
             self.end = True
             lives_dead = True
         self.steps +=1
+        if self.steps >= self.max_episode_steps:
+            self.end = True
+            lives_dead = True
         self.frame_queue.append(self._get_current_frame())
         self.total_reward += reward
         a = np.array(self.frame_queue)
