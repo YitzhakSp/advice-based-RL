@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
@@ -9,8 +9,6 @@ print("running on %s"%device)
 game_name='gopher'
 info = {
     "GAME":'roms/'+game_name+'.bin', # gym prefix
-    'print_stepnum':True,
-    'printstepnum_freq':100,
     "DEVICE":device, #cpu vs gpu set by argument
     "NAME":game_name+'_model', # start files with name
     "DUELING":True, # use dueling dqn
@@ -21,7 +19,7 @@ info = {
     "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
-    "MIN_HISTORY_TO_LEARN":500, # in steps
+    "MIN_HISTORY_TO_LEARN":500e3, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
     'COMP_UNCERT': False,
     'UNCERT_FREQ': 1,
@@ -53,7 +51,7 @@ info = {
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
     "MAX_STEPS":int(1e9), # 50e6 steps is 200e6 frames
-    "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
+     "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
   #  "MAX_EPISODES":1200,

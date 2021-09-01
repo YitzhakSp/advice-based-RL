@@ -14,6 +14,8 @@ from dqn_utils import seed_everything, write_info_file, generate_gif, save_check
 #from params import *
 from other_utils import *
 import json
+from PIL import Image as pil_image
+
 
 
 class ActionGetter:
@@ -202,6 +204,7 @@ def train(step_number,
         life_lost = True
         state = mvars['env'].reset()
         start_steps = step_number
+        stepnum_thisep = 0
         start_time = time.time()
         episode_reward_sum = 0
         active_head = np.random.randint(info['N_ENSEMBLE'])
@@ -215,6 +218,7 @@ def train(step_number,
         episode_num += 1
         ep_eps_list = []
         ptloss_list = []
+        envcheck_frame_prev=None
         while not terminal:
             if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
                 #print('computing uncertainty ...')
@@ -256,7 +260,6 @@ def train(step_number,
             next_state, reward, life_lost, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
             if info['dbg_flg']:
-
                 frame=next_state[1]
                 frame_prev=next_state[0]
                 ball_position=mvars['pong_funcs_obj'].ball_position(frame)
@@ -266,15 +269,23 @@ def train(step_number,
                 #print('towards agent =', towards)
                 print('crit =', crit)
                 time.sleep(0.5)
-
-                xyz=3
             mvars['replay_memory'].add_experience(action=action,
                                             frame=next_state[-1],
                                             reward=np.sign(reward), # TODO -maybe there should be +1 here
                                             terminal=life_lost)
+            if divmod(stepnum_thisep, info['env_check_freq'])[1] == 0:
+                envcheck_frame_current = next_state[0]
+                if (not (envcheck_frame_prev is None)) and np.allclose(envcheck_frame_current, envcheck_frame_prev):
+                    print('break training episode, environment doesnt work properly !')
+                    break
+                envcheck_frame_prev=envcheck_frame_current
+
             step_number += 1
+            stepnum_thisep+=1
             episode_reward_sum += reward
             state = next_state
+            if info['print_stepnum'] and divmod(stepnum_thisep,info['printstepnum_freq'])[1]==0 :
+                print('training steps (this episode): ' + str(stepnum_thisep))
             if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
                 #print('performing learning step')
                 _states, _actions, _rewards, _next_states, _terminal_flags, _masks = mvars['replay_memory'].get_minibatch(info['BATCH_SIZE'])
@@ -316,9 +327,10 @@ def train(step_number,
                 print(len(perf['episode_reward']), step_number, perf['avg_rewards'][-1], file=reward_file)
             '''
         if episode_num%info['EVAL_FREQUENCY']==0:
-            avg_eval_reward = evaluate(step_number,action_getter,mvars)
+            avg_eval_reward,env_ok_eval = evaluate(step_number,action_getter,mvars)
             perf['eval_rewards'].append(avg_eval_reward)
             perf['eval_steps'].append(step_number)
+            perf['env_ok_eval'].append(env_ok_eval) # does the environment function properly ?
             matplotlib_plot_all(perf,mvars['model_base_filedir'])
 
 def evaluate(step_number,action_getter,mvars):
@@ -333,6 +345,8 @@ def evaluate(step_number,action_getter,mvars):
     results_for_eval = []
     # only run one
     for i in range(info['NUM_EVAL_EPISODES']):
+        env_ok = True
+        envcheck_frame_prev=None
         state = mvars['env'].reset()
         episode_reward_sum = 0
         terminal = False
@@ -346,12 +360,19 @@ def evaluate(step_number,action_getter,mvars):
             next_state, reward, life_lost, terminal = mvars['env'].step(action)
             evaluate_step_number += 1
             episode_steps +=1
+            if info['print_stepnum'] and divmod(episode_steps,info['printstepnum_freq'])[1]==0 :
+                print('evaluation steps (this episode): ' + str(episode_steps))
             episode_reward_sum += reward
-            if not i:
-                # only save first episode
-                frames_for_gif.append(mvars['env'].ale.getScreenRGB())
-                results_for_eval.append("%s, %s, %s, %s" %(action, reward, life_lost, terminal))
+            if divmod(episode_steps,info['env_check_freq'])[1]==0:
+                envcheck_frame_current=next_state[0]
+                if (not (envcheck_frame_prev is None)) and np.allclose(envcheck_frame_current,envcheck_frame_prev):
+                    env_ok=False
+                    print('break evaluation loop, environment doesnt work properly !')
+                    break
+                envcheck_frame_prev=envcheck_frame_current
             state = next_state
+            #frame = pil_image.fromarray(next_state[0])
+
         eval_rewards.append(episode_reward_sum)
 
     print("Evaluation score:\n", np.mean(eval_rewards))
@@ -362,4 +383,4 @@ def evaluate(step_number,action_getter,mvars):
     with open(efile, 'a') as eval_reward_file:
         print(step_number, np.mean(eval_rewards), file=eval_reward_file)
     '''
-    return np.mean(eval_rewards)
+    return np.mean(eval_rewards), env_ok

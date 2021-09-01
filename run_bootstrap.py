@@ -1,3 +1,5 @@
+#originally from: https://github.com/johannah/bootstrap_dqn
+
 from __future__ import print_function
 import matplotlib
 matplotlib.use('Agg')
@@ -23,6 +25,7 @@ from train_utils import *
 from pong_utils import *
 from params import *
 
+#print('note that right now we use max_history_to_learn=500e3 (previously 500) !! this will not work for real training')
 print('answer the upcoming questions with y or n')
 long_exp=input("are you running a long experiment (1h +) ?")
 assert(long_exp=='y' or long_exp=='n')
@@ -44,7 +47,7 @@ load_model=False
 #load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
                   num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['seed_env'],
-                  dead_as_end=info['DEAD_AS_END'])
+                  max_episode_steps=info['MAX_EPISODE_STEPS'],dead_as_end=info['DEAD_AS_END'])
 replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              frame_height=info['NETWORK_INPUT_SIZE'][0],
                              frame_width=info['NETWORK_INPUT_SIZE'][1],
@@ -80,7 +83,9 @@ else:
             'eval_steps':[],
             'min_uncertainty':[],
             'max_uncertainty':[],
-            'advice_cnt':[]}
+            'advice_cnt':[],
+            'env_ok_eval':[]
+            }
     start_step_number = 0
     start_last_save = 0
     # make new directory for this run in the case that there is already a
