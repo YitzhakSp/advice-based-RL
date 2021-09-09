@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=False
+cuda=True
 if cuda:
     device = 'cuda'
 else:
@@ -9,7 +9,7 @@ print("running on %s"%device)
 game_name='gopher'
 info = {
     "GAME":'roms/'+game_name+'.bin', # gym prefix
-    'print_stepnum':True,
+    'print_stepnum':False,
     'printstepnum_freq':100,
     "DEVICE":device, #cpu vs gpu set by argument
     "NAME":game_name+'_model', # start files with name
@@ -58,7 +58,7 @@ info = {
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
   #  "MAX_EPISODES":1200,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
-    "model_loadpath": 'ku',
+    "model_loadpath": 'models/gopher_model02/gopher_model.pkl',
     "advicemodel_loadpath": 'models/optimal_gopher_dummy.pkl',
     'advice_flg':False,
     'seed_advice':1,
