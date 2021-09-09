@@ -328,7 +328,13 @@ def train(step_number,
             '''
         if episode_num%info['EVAL_FREQUENCY']==0:
             avg_eval_reward,env_ok_eval = evaluate(step_number,action_getter,mvars)
-            perf['eval_rewards'].append(avg_eval_reward)
+            if env_ok_eval:
+                perf['eval_rewards'].append(avg_eval_reward)
+            else:
+                if len(perf['eval_rewards']>0):
+                    perf['eval_rewards'].append(perf['eval_rewards'][-1])
+                else:
+                    perf['eval_rewards'].append(episode_reward_sum) # training episode reward
             perf['eval_steps'].append(step_number)
             perf['env_ok_eval'].append(env_ok_eval) # does the environment function properly ?
             matplotlib_plot_all(perf,mvars['model_base_filedir'])

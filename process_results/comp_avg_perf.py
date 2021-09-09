@@ -6,10 +6,9 @@ import matplotlib.pyplot as plt
 
 #thismodel_dir='simulations/advice/soft_treshold'
 #thismodel_dir='simulations/no_advice'
-thismodel_dir='../simulations/advice/limited/0.04/critxuncert'
-seeds=[1,2,3,4,5]
-#seeds=[4]
-print('loading performance data from '+ thismodel_dir)
+thismodel_dir='../simulations/Gopher/no_advice'
+#seeds=[1,2,3,4,5]
+seeds=[1]
 max_steps=2e6
 wind=5
 plot_flg=False
@@ -20,11 +19,16 @@ for seed in seeds:
         perf = json.load(f)
     min_eval_episodes = min(min_eval_episodes, len(perf['eval_rewards']))
     min_train_episodes = min(min_train_episodes, len(perf['steps']))
+
 sum_eval_rewards=np.zeros(min_eval_episodes)
 sum_advice_cnt=np.zeros(min_train_episodes)
 for seed in seeds:
-    with open(thismodel_dir + '/perf_' + str(seed) + '.json', 'r') as f:
+    filename=thismodel_dir + '/perf_' + str(seed) + '.json'
+    print('loading '+ filename +'...')
+    with open(filename, 'r') as f:
         perf = json.load(f)
+    valid_eval_episodes_ratio = round(sum(perf['env_ok_eval']) / len(perf['env_ok_eval']), 2)
+    print('valid_eval_episodes_ratio = ' + str(valid_eval_episodes_ratio))
     eval_rewards=np.array(perf['eval_rewards'][:min_eval_episodes])
     advice_cnt=np.array(perf['advice_cnt'][:min_train_episodes])
     sum_eval_rewards+=eval_rewards
