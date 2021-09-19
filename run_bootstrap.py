@@ -43,7 +43,7 @@ if long_exp=='y':
     input('correct criticality func ?')
     print('finished checklist !')
 
-load_model=True
+load_model=False
 #load_model=True
 env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
                   num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['seed_env'],
@@ -83,6 +83,7 @@ else:
             'eval_steps':[],
             'min_uncertainty':[],
             'max_uncertainty':[],
+            'avg_uncertainty': [],
             'advice_cnt':[],
             'env_ok_eval':[]
             }

@@ -316,9 +316,17 @@ def train(step_number,
             print('advice_soft:', advice_cnt_thisep)
         #perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
         if info['COMP_UNCERT']:
+            min_uncertainty=round(min_uncertainty, 3)
+            max_uncertainty=round(max_uncertainty, 3)
             perf['min_uncertainty'].append(min_uncertainty)
             perf['max_uncertainty'].append(max_uncertainty)
-            perf['avg_uncertainty'].append(sum_uncertainty/stepnum_thisep)
+            avg_uncertainty=round(sum_uncertainty/stepnum_thisep,3)
+            perf['avg_uncertainty'].append(avg_uncertainty)
+            print('min uncertainty: '+str(min_uncertainty))
+            print('max uncertainty: '+str(max_uncertainty))
+            print('avg uncertainty: '+str(avg_uncertainty))
+
+
 
         last_save = handle_checkpoint(last_save, episode_num,mvars,perf)
         if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
