@@ -219,12 +219,14 @@ def train(step_number,
         ep_eps_list = []
         ptloss_list = []
         envcheck_frame_prev=None
+        sum_uncertainty=0
         while not terminal:
             if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
                 #print('computing uncertainty ...')
                 uncertainty=compute_uncertainty(state, mvars['policy_net'])
                 min_uncertainty=min(uncertainty,min_uncertainty)
                 max_uncertainty=max(uncertainty,max_uncertainty)
+                sum_uncertainty+=uncertainty
             if life_lost:
                 action = 1
                 eps = 0
@@ -273,7 +275,7 @@ def train(step_number,
                                             frame=next_state[-1],
                                             reward=np.sign(reward), # TODO -maybe there should be +1 here
                                             terminal=life_lost)
-            if divmod(stepnum_thisep, info['env_check_freq'])[1] == 0:
+            if stepnum_thisep % info['env_check_freq'] == 0:
                 envcheck_frame_current = next_state[0]
                 if (not (envcheck_frame_prev is None)) and np.allclose(envcheck_frame_current, envcheck_frame_prev):
                     print('break training episode, environment doesnt work properly !')
@@ -316,6 +318,8 @@ def train(step_number,
         if info['COMP_UNCERT']:
             perf['min_uncertainty'].append(min_uncertainty)
             perf['max_uncertainty'].append(max_uncertainty)
+            perf['avg_uncertainty'].append(sum_uncertainty/stepnum_thisep)
+
         last_save = handle_checkpoint(last_save, episode_num,mvars,perf)
         if not episode_num%info['PLOT_EVERY_EPISODES'] and step_number > info['MIN_HISTORY_TO_LEARN']:
             # TODO plot title (TODO from johana)
