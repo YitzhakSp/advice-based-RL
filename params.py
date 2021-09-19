@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
@@ -23,7 +23,7 @@ info = {
     "TARGET_UPDATE":10000, # how often to update target network
     "MIN_HISTORY_TO_LEARN":500, # in steps
     "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
-    'COMP_UNCERT': False,
+    'COMP_UNCERT': True,
     'UNCERT_FREQ': 1,
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband

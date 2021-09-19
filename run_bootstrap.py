@@ -83,6 +83,7 @@ else:
             'eval_steps':[],
             'min_uncertainty':[],
             'max_uncertainty':[],
+            'avg_uncertainty': [],
             'advice_cnt':[],
             'env_ok_eval':[]
             }
