@@ -47,18 +47,18 @@ info = {
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
     "seed_env":101,
-    'seed_expl':1,
+    'seed_expl':5,
     'seed_torch_and_np':1234,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(84,84),
     "START_TIME":time.time(),
-    "MAX_STEPS":int(1e12), # 50e6 steps is 200e6 frames
+    "MAX_STEPS":int(5e6), # 50e6 steps is 200e6 frames
      "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
     "MAX_NO_OP_FRAMES":30, # random number of noops applied to beginning of each episode
   #  "MAX_EPISODES":1200,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
-    "model_loadpath": 'models/gopher_model02/gopher_model.pkl',
+    "model_loadpath": 'models/gopher_model02/ku.pkl',
     "advicemodel_loadpath": 'models/optimal_gopher_dummy.pkl',
     'advice_flg':False,
     'seed_advice':1,

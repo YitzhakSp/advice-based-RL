@@ -331,7 +331,7 @@ def train(step_number,
             if env_ok_eval:
                 perf['eval_rewards'].append(avg_eval_reward)
             else:
-                if len(perf['eval_rewards']>0):
+                if len(perf['eval_rewards'])>0:
                     perf['eval_rewards'].append(perf['eval_rewards'][-1])
                 else:
                     perf['eval_rewards'].append(episode_reward_sum) # training episode reward
