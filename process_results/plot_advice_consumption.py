@@ -25,7 +25,7 @@ if avg:
         #mypl.axhline(150000, linestyle='--')
         plt.legend()
 else:
-    perf_file = '../simulations/Pong/advice/unlimited_hardtrh/0.04/perf_1.json'
+    perf_file = '../simulations/Gopher/advice/20e-2/perf_1.json'
     print("plotting advice_budget for 1 run ...")
     '''
     max_steps = 2.5e6
@@ -48,5 +48,5 @@ else:
     mypl.plot(perf['steps'],advice_ratio,label='advice ratio')
     mypl.legend()
 mypl.grid(True)
-mypl.savefig('num_advice.png')
+mypl.savefig('advice_consumption.png')
 a=8
