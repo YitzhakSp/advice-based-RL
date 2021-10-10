@@ -16,4 +16,4 @@ for f in files:
     plt.legend()
 plt.grid(True)
 print('saving rewards plot ...')
-plt.savefig('../plots/rewards.png')
+plt.savefig('rewards.png')
