@@ -22,8 +22,8 @@ info = {
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
     "MIN_HISTORY_TO_LEARN":500, # in steps
-    "NORM_BY":255.,  # divide the float(of uint) by this number to normalize - max val of data is 255
-    'COMP_UNCERT': True,
+    "NORM_BY":255.0,  # divide the float(of uint) by this number to normalize - max val of data is 255
+    'COMP_UNCERT': False,
     'UNCERT_FREQ': 1,
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband
@@ -59,15 +59,15 @@ info = {
   #  "MAX_EPISODES":1200,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath": 'models/gopher_model02/ku.pkl',
-    "advicemodel_loadpath": 'models/optimal_gopher_dummy.pkl',
-    'advice_flg':False,
+    "advicemodel_loadpath": 'models/optimal_model_gopher.pkl',
+    'advice_flg':True,
     'seed_advice':1,
     'env_check_freq': 100, # check that environment functions correctly every n steps
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
-    'uncert_trh': 0.02,  # for advice
+    'uncert_trh': 0.2,  # for advice
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
-    'limited_advice_flg':True,
+    'limited_advice_flg':False,
     'advice_budget':150e3,
     'crit_how':1, # 1: nocrit, 2: crit_and_uncert, 3: crit*uncert
     'crittype':2, # (1,binary), (2,bothdir)

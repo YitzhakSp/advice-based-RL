@@ -298,6 +298,7 @@ def train(step_number,
                 print('updating target network at %s'%step_number)
                 mvars['target_net'].load_state_dict(mvars['policy_net'].state_dict())
         print('num advice : ',advice_cnt_thisep)
+        print('steps in episode : ',stepnum_thisep)
         end_time = time.time()
         ep_time = end_time-start_time
         perf['steps'].append(step_number)
