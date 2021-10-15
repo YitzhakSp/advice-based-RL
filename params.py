@@ -64,7 +64,7 @@ info = {
     'seed_advice':1,
     'env_check_freq': 100, # check that environment functions correctly every n steps
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
-    'uncert_trh': 0.2,  # for advice
+    'uncert_trh': 10e-2,  # for advice
     'uncert_trh_sigma':0.02,
     'advice_head': 0,
     'limited_advice_flg':False,
