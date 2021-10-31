@@ -2,8 +2,8 @@ import json
 import matplotlib.pyplot as plt
 from other_utils import *
 import numpy as np
-wind=5
-thismodel_dir='../simulations/Gopher/no_advice'
+wind=100 #5 Pong, 100 Gopher
+thismodel_dir='../simulations/Gopher/advice/15e-2'
 #thismodel_dir='simulations/advice/unlimited_hardtrh/0.04'
 #thismodel_dir='simulations/no_advice'
 avg_rewards=np.load(thismodel_dir+'/avg_rewards.npy')

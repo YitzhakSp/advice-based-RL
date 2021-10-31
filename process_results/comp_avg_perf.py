@@ -4,21 +4,21 @@ from other_utils import *
 import json
 import matplotlib.pyplot as plt
 
-#thismodel_dir='simulations/advice/soft_treshold'
-#thismodel_dir='simulations/no_advice'
-thismodel_dir='../simulations/Gopher/no_advice'
-#seeds=[1,2,3,4,5]
-seeds=[1]
+#thismodel_dir='../simulations/Gopher/no_advice'
+thismodel_dir='../simulations/Gopher/advice/4e-2'
+seeds=[1,2,3,4,5]
+#seeds=[1]
 max_steps=2e6
-wind=5
 plot_flg=False
 steps_pt_sum=0
 min_train_episodes,min_eval_episodes=10e6,10e6
+print('averaging over {} simulations ...'.format(len(seeds)))
 for seed in seeds:
     with open(thismodel_dir+'/perf_'+str(seed)+'.json', 'r') as f:
         perf = json.load(f)
     min_eval_episodes = min(min_eval_episodes, len(perf['eval_rewards']))
     min_train_episodes = min(min_train_episodes, len(perf['steps']))
+print('min_eval_episodes = '+str(min_eval_episodes))
 
 sum_eval_rewards=np.zeros(min_eval_episodes)
 sum_advice_cnt=np.zeros(min_train_episodes)
