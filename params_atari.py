@@ -1,6 +1,6 @@
 import time
 import datetime
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
@@ -42,7 +42,7 @@ info = {
     "RMS_EPSILON":0.00001,
     "RMS_CENTERED":True,
     "HISTORY_SIZE":4, # how many past frames to use for state input
-    "BATCH_SIZE":32, # Batch size to use for learning
+    "BATCH_SIZE":30, # Batch size to use for learning
     "GAMMA":.99, # Gamma weight in Q update
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
@@ -60,7 +60,7 @@ info = {
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
     "model_loadpath": 'models/gopher_model02/ku.pkl',
     "advicemodel_loadpath": 'models/optimal_model_gopher.pkl',
-    'advice_flg':True,
+    'advice_flg':False,
     'seed_advice':1,
     'env_check_freq': 100, # check that environment functions correctly every n steps
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)

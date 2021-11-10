@@ -5,8 +5,8 @@ import time
 # https://github.com/fg91/Deep-Q-Learning/blob/master/DQN.ipynb
 class ReplayMemory:
     """Replay Memory that stores the last size=1,000,000 transitions"""
-    def __init__(self, size=1000000, frame_height=84, frame_width=84,
-                 agent_history_length=4, batch_size=32, num_heads=1, bernoulli_probability=1.0):
+    def __init__(self, size='ku', frame_height='ku', frame_width='ku',
+                 agent_history_length='ku', batch_size='ku', num_heads='ku', bernoulli_probability='ku'):
         """
         Args:
             size: Integer, Number of stored transitions

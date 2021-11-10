@@ -30,7 +30,7 @@ def weights_init(m):
 
 
 class CoreNet(nn.Module):
-    def __init__(self, network_output_size=84, num_channels=4):
+    def __init__(self, network_output_size='ku', num_channels='ku'):
         super(CoreNet, self).__init__()
         self.network_output_size = network_output_size
         self.num_channels = num_channels
@@ -52,8 +52,9 @@ class CoreNet(nn.Module):
         x = x.view(-1, reshape)
         return x
 
+
 class DuelingHeadNet(nn.Module):
-    def __init__(self, n_actions=4):
+    def __init__(self, n_actions='ku'):
         super(DuelingHeadNet, self).__init__()
         mult = 64*7*7
         self.split_size = 512
@@ -74,7 +75,7 @@ class DuelingHeadNet(nn.Module):
         return q
 
 class HeadNet(nn.Module):
-    def __init__(self, n_actions=4):
+    def __init__(self, n_actions='ku'):
         super(HeadNet, self).__init__()
         mult = 64*7*7
         self.fc1 = nn.Linear(mult, 512)

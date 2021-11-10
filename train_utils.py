@@ -11,7 +11,6 @@ torch.set_num_threads(2)
 import torch.nn as nn
 import torch.nn.functional as F
 from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
-#from params import *
 from other_utils import *
 import json
 from PIL import Image as pil_image
@@ -201,7 +200,6 @@ def train(step_number,
         print('episode '+ str(episode_num))
         print('steps total: '+ str(step_number))
         terminal = False
-        life_lost = True
         state = mvars['env'].reset()
         start_steps = step_number
         stepnum_thisep = 0
@@ -212,7 +210,7 @@ def train(step_number,
         if info['dbg_flg']:
             advice_cnt_thisep_hard=0
             perf['advice_cnt_hard']=[]
-        if ['COMP_UNCERT']:
+        if info['COMP_UNCERT']:
             min_uncertainty = compute_uncertainty(state, mvars['policy_net'])
             max_uncertainty=min_uncertainty
         episode_num += 1
@@ -220,6 +218,7 @@ def train(step_number,
         ptloss_list = []
         envcheck_frame_prev=None
         sum_uncertainty=0
+        first_step_in_episode=True
         while not terminal:
             if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
                 #print('computing uncertainty ...')
@@ -227,9 +226,10 @@ def train(step_number,
                 min_uncertainty=min(uncertainty,min_uncertainty)
                 max_uncertainty=max(uncertainty,max_uncertainty)
                 sum_uncertainty+=uncertainty
-            if life_lost:
+            if first_step_in_episode:
                 action = 1
                 eps = 0
+                first_step_in_episode=False
             else:
                 get_advice=False
                 #potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
@@ -259,22 +259,12 @@ def train(step_number,
                     #print('no advice')
                     eps,action = action_getter.pt_get_action(step_number, state=state,active_head=active_head)
             ep_eps_list.append(eps)
-            next_state, reward, life_lost, terminal = mvars['env'].step(action)
+            next_state, reward, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
-            if info['dbg_flg']:
-                frame=next_state[1]
-                frame_prev=next_state[0]
-                ball_position=mvars['pong_funcs_obj'].ball_position(frame)
-                print('ballpos =', ball_position)
-                towards=mvars['pong_funcs_obj'].ball_towards(frame,frame_prev)
-                crit=mvars['pong_funcs_obj'].critfunc(next_state,info['crittype'])
-                #print('towards agent =', towards)
-                print('crit =', crit)
-                time.sleep(0.5)
             mvars['replay_memory'].add_experience(action=action,
                                             frame=next_state[-1],
-                                            reward=np.sign(reward), # TODO -maybe there should be +1 here
-                                            terminal=life_lost)
+                                            reward=reward, # TODO -maybe there should be +1 here
+                                            terminal=terminal)
             if stepnum_thisep % info['env_check_freq'] == 0:
                 envcheck_frame_current = next_state[0]
                 if (not (envcheck_frame_prev is None)) and np.allclose(envcheck_frame_current, envcheck_frame_prev):
@@ -289,7 +279,7 @@ def train(step_number,
             if info['print_stepnum'] and divmod(stepnum_thisep,info['printstepnum_freq'])[1]==0 :
                 print('training steps (this episode): ' + str(stepnum_thisep))
             if step_number % info['LEARN_EVERY_STEPS'] == 0 and step_number > info['MIN_HISTORY_TO_LEARN']:
-                #print('performing learning step')
+                print('performing learning step')
                 _states, _actions, _rewards, _next_states, _terminal_flags, _masks = mvars['replay_memory'].get_minibatch(info['BATCH_SIZE'])
                 ptloss = ptlearn(_states, _actions, _rewards, _next_states, _terminal_flags, _masks,mvars)
                 ptloss_list.append(ptloss)
@@ -369,14 +359,10 @@ def evaluate(step_number,action_getter,mvars):
         state = mvars['env'].reset()
         episode_reward_sum = 0
         terminal = False
-        life_lost = True
         episode_steps = 0
         while not terminal:
-            if life_lost:
-                action = 1
-            else:
-                eps,action = action_getter.pt_get_action(step_number, state, active_head=None, evaluation=True)
-            next_state, reward, life_lost, terminal = mvars['env'].step(action)
+            eps,action = action_getter.pt_get_action(step_number, state, active_head=None, evaluation=True)
+            next_state, reward, terminal = mvars['env'].step(action)
             evaluate_step_number += 1
             episode_steps +=1
             if info['print_stepnum'] and divmod(episode_steps,info['printstepnum_freq'])[1]==0 :

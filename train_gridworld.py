@@ -15,17 +15,17 @@ import torch.nn.functional as F
 import torch.optim as optim
 import datetime
 import time
-from dqn_model import EnsembleNet, NetWithPrior
+from dqn_model_gw import *
 from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
 from env import Environment
 from replay import ReplayMemory
 import config
 from argparse import ArgumentParser
 from train_utils import *
-from pong_utils import *
-from params import *
+from other_utils import *
+from gridworld_stuff.gridworld import *
 
-#print('note that right now we use max_history_to_learn=500e3 (previously 500) !! this will not work for real training')
+'''
 print('answer the upcoming questions with y or n')
 long_exp=input("are you running a long experiment (1h +) ?")
 assert(long_exp=='y' or long_exp=='n')
@@ -42,12 +42,10 @@ if long_exp=='y':
     input('correct way of including criticality (no or yes, if yes, how ?) ?')
     input('correct criticality func ?')
     print('finished checklist !')
-
+'''
 load_model=False
 #load_model=True
-env = Environment(rom_file=info['GAME'], frame_skip=info['FRAME_SKIP'],
-                  num_frames=info['HISTORY_SIZE'], no_op_start=info['MAX_NO_OP_FRAMES'], rand_seed=info['seed_env'],
-                  max_episode_steps=info['MAX_EPISODE_STEPS'],dead_as_end=info['DEAD_AS_END'])
+env = Gridworld()
 replay_memory = ReplayMemory(size=info['BUFFER_SIZE'],
                              frame_height=info['NETWORK_INPUT_SIZE'][0],
                              frame_width=info['NETWORK_INPUT_SIZE'][1],
@@ -104,22 +102,12 @@ model_base_filepath = os.path.join(model_base_filedir, info['NAME'])
 write_info_file(info, model_base_filepath, start_step_number)
 heads = list(range(info['N_ENSEMBLE']))
 seed_everything(info["seed_torch_and_np"])
-policy_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
-                                  n_actions=env.num_actions,
-                                  network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                                  num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
-target_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
-                                  n_actions=env.num_actions,
-                                  network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                                  num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
-if info['PRIOR']:
-    prior_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
+policy_net = EnsembleNetGw(n_ensemble=info['N_ENSEMBLE'],
                             n_actions=env.num_actions,
-                            network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                            num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
-    print("using randomized prior")
-    policy_net = NetWithPrior(policy_net, prior_net, info['PRIOR_SCALE'])
-    target_net = NetWithPrior(target_net, prior_net, info['PRIOR_SCALE'])
+                           input_dim=info["NETWORK_INPUT_SIZE"][0])
+target_net = EnsembleNetGw(n_ensemble=info['N_ENSEMBLE'],
+                            n_actions=env.num_actions,
+                           input_dim=info["NETWORK_INPUT_SIZE"][0])
 target_net.load_state_dict(policy_net.state_dict())
 opt = optim.Adam(policy_net.parameters(), lr=info['ADAM_LEARNING_RATE'])
 if load_model:
@@ -140,12 +128,7 @@ advice_net=None
 if info['advice_flg']:
     print('loading advice model from: %s' %info['advicemodel_loadpath'])
     model_dict = torch.load(info['advicemodel_loadpath'])
-    advice_net = EnsembleNet(n_ensemble=info['N_ENSEMBLE'],
-                             n_actions=env.num_actions,
-                             network_output_size=info['NETWORK_INPUT_SIZE'][0],
-                             num_channels=info['HISTORY_SIZE'], dueling=info['DUELING']).to(info['DEVICE'])
-    if info['PRIOR']:
-        advice_net = NetWithPrior(advice_net, prior_net, info['PRIOR_SCALE'])
+    advice_net = EnsembleNetGw(n_ensemble=info['N_ENSEMBLE'],            )
     advice_net.load_state_dict(model_dict['policy_net_state_dict'])
 action_getter = ActionGetter(n_actions=env.num_actions,
                              policy_net=policy_net,
@@ -167,7 +150,7 @@ mvars={
 'model_base_filedir':model_base_filedir,
 'env':env,
 'heads':heads,
-'pong_funcs_obj': Pong_funcs(),
+#'pong_funcs_obj': Pong_funcs(),
 'advice_cnt_tot':advice_cnt_tot,
 'randg_adv':np.random.RandomState(info['seed_advice'])
 }

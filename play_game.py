@@ -1,5 +1,5 @@
 from env import Environment
-from params import *
+from params_atari import *
 import numpy as np
 from PIL import Image as pil_image
 from gridworld_stuff.gridworld import *

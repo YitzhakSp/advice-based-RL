@@ -114,32 +114,24 @@ class Environment(object):
         assert not self.end
         reward = 0
         old_lives = self.ale.lives()
-
         for i in range(self.frame_skip):
             if i == self.frame_skip - 1:
                 self.prev_screen = self.ale.getScreenRGB()
             r = self.ale.act(self.actions[action_idx])
             reward += r
-        dead = (self.ale.lives() < old_lives)
-        if self.dead_as_end and dead:
-            lives_dead = True
-        else:
-            lives_dead = False
-
-        if self.ale.game_over():
-            self.end = True
-            lives_dead = True
         self.steps +=1
-        if self.steps >= self.max_episode_steps:
+        dead = (self.ale.lives() < old_lives)
+        if dead and self.dead_as_end:
             self.end = True
-            lives_dead = True
+        if self.ale.game_over() or (self.steps >= self.max_episode_steps):
+            self.end = True
         self.frame_queue.append(self._get_current_frame())
         self.total_reward += reward
         a = np.array(self.frame_queue)
         self.prev_screen = self.ale.getScreenRGB()
         self.gray_plot_frames.append(np.concatenate((a[0],a[1],a[2],a[3]),axis=0))
         self.plot_frames.append(self.prev_screen)
-        return np.array(self.frame_queue), reward, lives_dead, self.end
+        return np.array(self.frame_queue), reward, self.end
 
 
 if __name__ == '__main__':

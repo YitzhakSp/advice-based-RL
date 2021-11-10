@@ -62,7 +62,7 @@ class Gridworld:
             reward = 0.0
         self.agent_pos=[x,y]
         self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
-        return self.state.copy(), reward, life_lost, terminal
+        return self.state.copy(), reward, terminal
 
 
 def agent_pos_to_state(pos,goal,pits):
@@ -70,6 +70,9 @@ def agent_pos_to_state(pos,goal,pits):
     for pit in pits:
         state.append(pos[0]-pit[0])
         state.append(pos[1]-pit[1])
+    state=np.array(state,dtype=int)
+    state=np.expand_dims(state,axis=1)
+    state=np.expand_dims(state,axis=0)
     return state
 
 def position_diff(a,b):
