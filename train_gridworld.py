@@ -25,7 +25,7 @@ from train_utils import *
 from other_utils import *
 from gridworld_stuff.gridworld import *
 
-'''
+
 print('answer the upcoming questions with y or n')
 long_exp=input("are you running a long experiment (1h +) ?")
 assert(long_exp=='y' or long_exp=='n')
@@ -42,7 +42,7 @@ if long_exp=='y':
     input('correct way of including criticality (no or yes, if yes, how ?) ?')
     input('correct criticality func ?')
     print('finished checklist !')
-'''
+
 if info['dbg_flg']:
     print('debug mode !')
 load_model=False

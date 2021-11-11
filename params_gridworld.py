@@ -1,7 +1,7 @@
 import time
 import datetime
 #params for gridworld
-cuda=False
+cuda=True
 if cuda:
     device = 'cuda'
 else:
@@ -72,7 +72,7 @@ info = {
     'crit_how':1, # 1: nocrit, 2: crit_and_uncert, 3: crit*uncert
     'crittype':2, # (1,binary), (2,bothdir)
     'crit_trh':0.9, # for advice
-    "dbg_flg":True
+    "dbg_flg":False
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
