@@ -207,9 +207,6 @@ def train(step_number,
         episode_reward_sum = 0
         active_head = np.random.randint(info['N_ENSEMBLE'])
         advice_cnt_thisep=0
-        if info['dbg_flg']:
-            advice_cnt_thisep_hard=0
-            perf['advice_cnt_hard']=[]
         if info['COMP_UNCERT']:
             min_uncertainty = compute_uncertainty(state, mvars['policy_net'])
             max_uncertainty=min_uncertainty
@@ -219,7 +216,10 @@ def train(step_number,
         envcheck_frame_prev=None
         sum_uncertainty=0
         first_step_in_episode=True
+        disc_fact=1.0
         while not terminal:
+            if info['APPLY_GAMMA_TO_RET']:
+                disc_fact=info['GAMMA']*disc_fact
             if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
                 #print('computing uncertainty ...')
                 uncertainty=compute_uncertainty(state, mvars['policy_net'])
@@ -274,7 +274,7 @@ def train(step_number,
 
             step_number += 1
             stepnum_thisep+=1
-            episode_reward_sum += reward
+            episode_reward_sum += disc_fact*reward
             state = next_state
             if info['print_stepnum'] and divmod(stepnum_thisep,info['printstepnum_freq'])[1]==0 :
                 print('training steps (this episode): ' + str(stepnum_thisep))
@@ -301,10 +301,6 @@ def train(step_number,
         #perf['episode_relative_times'].append(time.time()-info['START_TIME'])
         perf['advice_cnt'].append(advice_cnt_thisep)
         print('episode score: '+str(episode_reward_sum))
-        if info['dbg_flg']:
-            perf['advice_cnt_hard'].append(advice_cnt_thisep_hard)
-            print('advice_hard:', advice_cnt_thisep_hard)
-            print('advice_soft:', advice_cnt_thisep)
         #perf['avg_rewards'].append(np.mean(perf['episode_reward'][-100:]))
         if info['COMP_UNCERT']:
             min_uncertainty=round(min_uncertainty, 3)
@@ -360,14 +356,19 @@ def evaluate(step_number,action_getter,mvars):
         episode_reward_sum = 0
         terminal = False
         episode_steps = 0
-        while not terminal:
+        disc_fact=1.0
+        while (not terminal) and (episode_steps<info['MAX_EPISODE_STEPS_EVAL']):
+            if info['APPLY_GAMMA_TO_RET']:
+                disc_fact=info['GAMMA']*disc_fact
             eps,action = action_getter.pt_get_action(step_number, state, active_head=None, evaluation=True)
             next_state, reward, terminal = mvars['env'].step(action)
+            if info['dbg_flg']:
+                tmp1='ku'
             evaluate_step_number += 1
             episode_steps +=1
             if info['print_stepnum'] and divmod(episode_steps,info['printstepnum_freq'])[1]==0 :
                 print('evaluation steps (this episode): ' + str(episode_steps))
-            episode_reward_sum += reward
+            episode_reward_sum += disc_fact*reward
             if divmod(episode_steps,info['env_check_freq'])[1]==0:
                 envcheck_frame_current=next_state[0]
                 if (not (envcheck_frame_prev is None)) and np.allclose(envcheck_frame_current,envcheck_frame_prev):
@@ -376,16 +377,7 @@ def evaluate(step_number,action_getter,mvars):
                     break
                 envcheck_frame_prev=envcheck_frame_current
             state = next_state
-            #frame = pil_image.fromarray(next_state[0])
-
         eval_rewards.append(episode_reward_sum)
-
-    print("Evaluation score:\n", np.mean(eval_rewards))
-    '''
-    generate_gif(mvars['model_base_filedir'], step_number, frames_for_gif, eval_rewards[0], name='test', results=results_for_eval)
-    # Show the evaluation score in tensorboard
-    efile = os.path.join(mvars['model_base_filedir'], 'eval_rewards.txt')
-    with open(efile, 'a') as eval_reward_file:
-        print(step_number, np.mean(eval_rewards), file=eval_reward_file)
-    '''
-    return np.mean(eval_rewards), env_ok
+    mean_eval_reward_sum=np.mean(eval_rewards)
+    print("Evaluation score:\n", mean_eval_reward_sum)
+    return mean_eval_reward_sum, env_ok

@@ -43,6 +43,8 @@ if long_exp=='y':
     input('correct criticality func ?')
     print('finished checklist !')
 '''
+if info['dbg_flg']:
+    print('debug mode !')
 load_model=False
 #load_model=True
 env = Gridworld()

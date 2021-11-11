@@ -16,7 +16,7 @@ info = {
     "DOUBLE_DQN":True, # use double dqn
     "PRIOR":True, # turn on to use randomized prior
     "PRIOR_SCALE":10, # what to scale prior by
-    "N_ENSEMBLE":10, # number of bootstrap heads to use. when 1, this is a normal dqn
+    "N_ENSEMBLE":5, # number of bootstrap heads to use. when 1, this is a normal dqn
     "LEARN_EVERY_STEPS":4, # updates every 4 steps in osband
     "BERNOULLI_PROBABILITY": 0.9, # Probability of experience to go to each head - if 1, every experience goes to every head
     "TARGET_UPDATE":10000, # how often to update target network
@@ -42,17 +42,19 @@ info = {
     "RMS_CENTERED":True,
     "HISTORY_SIZE":1, # how many past frames to use for state input
     "BATCH_SIZE":30, # Batch size to use for learning
-    "GAMMA":.99, # Gamma weight in Q update
+    "GAMMA":.9, # Gamma weight in Q update
+    "APPLY_GAMMA_TO_RET":True, # apply gamma for computing episode return
     "PLOT_EVERY_EPISODES": 50,
     "CLIP_GRAD":5, # Gradient clipping setting
     "seed_env":101,
-    'seed_expl':5,
+    'seed_expl':1,
     'seed_torch_and_np':1234,
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(14,1),
     "START_TIME":time.time(),
     "MAX_STEPS":int(5e6), # 50e6 steps is 200e6 frames
-     "MAX_EPISODE_STEPS":27000, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
+     "MAX_EPISODE_STEPS_TRAIN":200, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
+    "MAX_EPISODE_STEPS_EVAL": 100,  # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
   #  "MAX_EPISODES":1200,
     "DEAD_AS_END":True, # do you send finished=true to agent while training when it loses a life,
@@ -60,7 +62,7 @@ info = {
     "advicemodel_loadpath": 'models/optimal_model_gopher.pkl',
     'advice_flg':False,
     'seed_advice':1,
-    'env_check_freq': 100, # check that environment functions correctly every n steps
+    'env_check_freq': 1e12, # check that environment functions correctly every n steps
     'uncert_trh_type':'h', #for advice. values: soft(s) or hard(h)
     'uncert_trh': 15e-2,  # for advice
     'uncert_trh_sigma':0.02,
