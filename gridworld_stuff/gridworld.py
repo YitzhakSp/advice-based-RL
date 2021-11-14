@@ -24,7 +24,7 @@ class Gridworld:
         self.num_actions=len(self.actions)
 
         # start state
-        self.start_agent_pos = [4, 5]
+        self.start_agent_pos = [2,2]
         self.agent_pos = self.start_agent_pos.copy()
 
         # goal agent_pos
@@ -55,7 +55,7 @@ class Gridworld:
         if [x, y] in self.pits:
             reward = -1.0
             life_lost, terminal = True, True
-        elif [x, y] in self.goal:
+        elif [x, y] == self.goal:
             reward = 1.0
             life_lost, terminal = False, True
         else:

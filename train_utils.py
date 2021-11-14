@@ -197,8 +197,9 @@ def train(step_number,
     episode_num = len(perf['steps'])
     advice_cnt_tot=mvars['advice_cnt_tot']
     while step_number < info['MAX_STEPS']:
-        print('episode '+ str(episode_num))
-        print('steps total: '+ str(step_number))
+        print('#################################################')
+        print('starting episode '+ str(episode_num))
+        print('steps before this episode: '+ str(step_number))
         terminal = False
         state = mvars['env'].reset()
         start_steps = step_number
@@ -226,38 +227,33 @@ def train(step_number,
                 min_uncertainty=min(uncertainty,min_uncertainty)
                 max_uncertainty=max(uncertainty,max_uncertainty)
                 sum_uncertainty+=uncertainty
-            if first_step_in_episode:
-                action = 1
-                eps = 0
-                first_step_in_episode=False
+            get_advice=False
+            #potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
+            if info['advice_flg']:
+                uncertainty = compute_uncertainty(state, mvars['policy_net'])
+                if info['crit_how']==1:
+                    if uncertainty >= info['uncert_trh']:
+                        get_advice=True
+                elif info['crit_how']==2:
+                    crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
+                    get_advice= ((uncertainty >= info['uncert_trh']) and (crit>=info['crit_trh']))
+                elif info['crit_how']==3:
+                    crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
+                    get_advice=((crit*uncertainty)>=info['uncert_trh'])
+                if info['limited_advice_flg'] and advice_cnt_tot > info['advice_budget']:
+                    get_advice = False
+            if get_advice:
+                #print('uncert: ',uncertainty)
+                #print('getting advice')
+                state_tens = torch.Tensor(state.astype(np.float) / info['NORM_BY'])[None, :].to(info['DEVICE'])
+                vals=mvars['advice_net'](state_tens,info['advice_head'])
+                action = torch.argmax(vals, dim=1).item()
+                advice_cnt_thisep+=1
+                advice_cnt_tot+=1
             else:
-                get_advice=False
-                #potential_advice_state=advice_required(state,mvars['policy_net'],info['uncert_trh_type'],mvars)
-                if info['advice_flg']:
-                    uncertainty = compute_uncertainty(state, mvars['policy_net'])
-                    if info['crit_how']==1:
-                        if uncertainty >= info['uncert_trh']:
-                            get_advice=True
-                    elif info['crit_how']==2:
-                        crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
-                        get_advice= ((uncertainty >= info['uncert_trh']) and (crit>=info['crit_trh']))
-                    elif info['crit_how']==3:
-                        crit = mvars['pong_funcs_obj'].critfunc(state,info['crittype'])
-                        get_advice=((crit*uncertainty)>=info['uncert_trh'])
-                    if info['limited_advice_flg'] and advice_cnt_tot > info['advice_budget']:
-                        get_advice = False
-                if get_advice:
-                    #print('uncert: ',uncertainty)
-                    #print('getting advice')
-                    state_tens = torch.Tensor(state.astype(np.float) / info['NORM_BY'])[None, :].to(info['DEVICE'])
-                    vals=mvars['advice_net'](state_tens,info['advice_head'])
-                    action = torch.argmax(vals, dim=1).item()
-                    advice_cnt_thisep+=1
-                    advice_cnt_tot+=1
-                else:
-                    #print('uncert: ',uncertainty)
-                    #print('no advice')
-                    eps,action = action_getter.pt_get_action(step_number, state=state,active_head=active_head)
+                #print('uncert: ',uncertainty)
+                #print('no advice')
+                eps,action = action_getter.pt_get_action(step_number, state=state,active_head=active_head)
             ep_eps_list.append(eps)
             next_state, reward, terminal = mvars['env'].step(action)
             # Store transition in the replay memory
@@ -289,6 +285,7 @@ def train(step_number,
                 mvars['target_net'].load_state_dict(mvars['policy_net'].state_dict())
         print('num advice : ',advice_cnt_thisep)
         print('steps in episode : ',stepnum_thisep)
+        print('eps after episode : ',eps)
         end_time = time.time()
         ep_time = end_time-start_time
         perf['steps'].append(step_number)
@@ -350,6 +347,7 @@ def evaluate(step_number,action_getter,mvars):
     results_for_eval = []
     # only run one
     for i in range(info['NUM_EVAL_EPISODES']):
+        print('evaluation episode: '+str(i))
         env_ok = True
         envcheck_frame_prev=None
         state = mvars['env'].reset()
@@ -379,5 +377,5 @@ def evaluate(step_number,action_getter,mvars):
             state = next_state
         eval_rewards.append(episode_reward_sum)
     mean_eval_reward_sum=np.mean(eval_rewards)
-    print("Evaluation score:\n", mean_eval_reward_sum)
+    print("Average evaluation score:\n", mean_eval_reward_sum)
     return mean_eval_reward_sum, env_ok
