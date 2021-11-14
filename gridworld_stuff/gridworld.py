@@ -24,7 +24,7 @@ class Gridworld:
         self.num_actions=len(self.actions)
 
         # start state
-        self.start_agent_pos = [2,2]
+        self.start_agent_pos = [4,5]
         self.agent_pos = self.start_agent_pos.copy()
 
         # goal agent_pos

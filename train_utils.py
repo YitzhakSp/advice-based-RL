@@ -16,7 +16,6 @@ import json
 from PIL import Image as pil_image
 
 
-
 class ActionGetter:
     """Determines an action according to an epsilon greedy strategy with annealing epsilon"""
     """This class is from fg91's dqn. TODO put my function back in"""
@@ -194,6 +193,7 @@ def train(step_number,
           action_getter,
           mvars,
           perf):
+    max_eval_score=None
     episode_num = len(perf['steps'])
     advice_cnt_tot=mvars['advice_cnt_tot']
     while step_number < info['MAX_STEPS']:
@@ -323,7 +323,7 @@ def train(step_number,
                 print(len(perf['episode_reward']), step_number, perf['avg_rewards'][-1], file=reward_file)
             '''
         if episode_num%info['EVAL_FREQUENCY']==0:
-            avg_eval_reward,env_ok_eval = evaluate(step_number,action_getter,mvars)
+            avg_eval_reward,max_eval_score,env_ok_eval = evaluate(step_number,max_eval_score,action_getter,mvars)
             if env_ok_eval:
                 perf['eval_rewards'].append(avg_eval_reward)
             else:
@@ -335,7 +335,7 @@ def train(step_number,
             perf['env_ok_eval'].append(env_ok_eval) # does the environment function properly ?
             matplotlib_plot_all(perf,mvars['model_base_filedir'])
 
-def evaluate(step_number,action_getter,mvars):
+def evaluate(step_number, max_eval_score ,action_getter,mvars):
     print("""
          #########################
          ####### Evaluation ######
@@ -376,6 +376,11 @@ def evaluate(step_number,action_getter,mvars):
                 envcheck_frame_prev=envcheck_frame_current
             state = next_state
         eval_rewards.append(episode_reward_sum)
+    if max_eval_score is None:
+        max_eval_score=max(eval_rewards)
+    else:
+        max_eval_score=max(max_eval_score,max(eval_rewards))
     mean_eval_reward_sum=np.mean(eval_rewards)
-    print("Average evaluation score:\n", mean_eval_reward_sum)
-    return mean_eval_reward_sum, env_ok
+    print("Average evaluation score (this eval loop):\n", mean_eval_reward_sum)
+    print("Max evaluation score (all eval loops):\n", max_eval_score)
+    return mean_eval_reward_sum, max_eval_score,env_ok
