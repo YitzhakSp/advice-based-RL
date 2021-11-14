@@ -27,19 +27,14 @@ info = {
     "EPS_INITIAL":1.0, # should be 1
     "EPS_FINAL":0.01, # 0.01 in osband
     "EPS_EVAL":0.0, # 0 in osband, .05 in others....
-    "EPS_ANNEALING_FRAMES":int(1e6), # this may have been 1e6 in osband
+    "EPS_ANNEALING_FRAMES":int(1e5), # this may have been 1e6 in osband
     #"EPS_ANNEALING_FRAMES":0, # if it annealing is zero, then it will only use the bootstrap after the first MIN_EXAMPLES_TO_LEARN steps which are random
     "EPS_FINAL_FRAME":0.01,
-    "NUM_EVAL_EPISODES":1, # num examples to average in eval
+    "NUM_EVAL_EPISODES":10, # num examples to average in eval
     "BUFFER_SIZE":int(1e4), # Buffer size for experience replay
     "CHECKPOINT_EVERY_EPISODES":1, # how often to write pkl of model and npz of data buffer
-    "EVAL_FREQUENCY":2, # how often to run evaluation episodes
-    "ADAM_LEARNING_RATE":1e-2,
-    "RMS_LEARNING_RATE": 1e-2, # according to paper = 0.00025
-    "RMS_DECAY":0.95,
-    "RMS_MOMENTUM":0.0,
-    "RMS_EPSILON":0.00001,
-    "RMS_CENTERED":True,
+    "EVAL_FREQUENCY":10, # how often to run evaluation episodes
+    "ADAM_LEARNING_RATE":6.25e-5,
     "HISTORY_SIZE":1, # how many past frames to use for state input
     "BATCH_SIZE":30, # Batch size to use for learning
     "GAMMA":.9, # Gamma weight in Q update
@@ -72,7 +67,12 @@ info = {
     'crit_how':1, # 1: nocrit, 2: crit_and_uncert, 3: crit*uncert
     'crittype':2, # (1,binary), (2,bothdir)
     'crit_trh':0.9, # for advice
+<<<<<<< HEAD
     "dbg_flg":False
+=======
+    'checklist_flg':False,
+    "dbg_flg":True,
+>>>>>>> 26533f793e5bbd9d9e091c81ae02129edb575efe
 
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
