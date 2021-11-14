@@ -1,7 +1,7 @@
 import time
 import datetime
 #params for gridworld
-cuda=True
+cuda=False
 if cuda:
     device = 'cuda'
 else:
@@ -34,8 +34,8 @@ info = {
     "BUFFER_SIZE":int(1e4), # Buffer size for experience replay
     "CHECKPOINT_EVERY_EPISODES":1, # how often to write pkl of model and npz of data buffer
     "EVAL_FREQUENCY":2, # how often to run evaluation episodes
-    "ADAM_LEARNING_RATE":6.25e-5,
-    "RMS_LEARNING_RATE": 0.00025, # according to paper = 0.00025
+    "ADAM_LEARNING_RATE":1e-2,
+    "RMS_LEARNING_RATE": 1e-2, # according to paper = 0.00025
     "RMS_DECAY":0.95,
     "RMS_MOMENTUM":0.0,
     "RMS_EPSILON":0.00001,

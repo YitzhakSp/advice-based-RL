@@ -14,7 +14,7 @@ class CoreNetGw(nn.Module):
         if len(x.shape)==4:
             x=torch.squeeze(x,3)
             x=torch.squeeze(x,1)
-            x=x.to(info['DEVICE'])
+            #x=x.to(info['DEVICE'])
         x = F.relu(self.L1(x))
         x = F.relu(self.L2(x))
         return x
