@@ -30,10 +30,10 @@ info = {
     "EPS_ANNEALING_FRAMES":int(1e5), # this may have been 1e6 in osband
     #"EPS_ANNEALING_FRAMES":0, # if it annealing is zero, then it will only use the bootstrap after the first MIN_EXAMPLES_TO_LEARN steps which are random
     "EPS_FINAL_FRAME":0.01,
-    "NUM_EVAL_EPISODES":10, # num examples to average in eval
     "BUFFER_SIZE":int(1e4), # Buffer size for experience replay
     "CHECKPOINT_EVERY_EPISODES":1, # how often to write pkl of model and npz of data buffer
-    "EVAL_FREQUENCY":10, # how often to run evaluation episodes
+    "EVAL_FREQUENCY":100, # how often to run evaluation episodes
+    "NUM_EVAL_EPISODES": 1,  # num examples to average in eval
     "ADAM_LEARNING_RATE":6.25e-5,
     "HISTORY_SIZE":1, # how many past frames to use for state input
     "BATCH_SIZE":30, # Batch size to use for learning
@@ -47,7 +47,7 @@ info = {
     "RANDOM_HEAD":-1, # just used in plotting as demarcation
     "NETWORK_INPUT_SIZE":(14,1),
     "START_TIME":time.time(),
-    "MAX_STEPS":int(5e6), # 50e6 steps is 200e6 frames
+    "MAX_STEPS":int(2e6), # 50e6 steps is 200e6 frames
      "MAX_EPISODE_STEPS_TRAIN":200, # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "MAX_EPISODE_STEPS_EVAL": 100,  # Orig dqn give 18k steps, Rainbow seems to give 27k steps
     "FRAME_SKIP":4, # deterministic frame skips to match deepmind
@@ -67,13 +67,8 @@ info = {
     'crit_how':1, # 1: nocrit, 2: crit_and_uncert, 3: crit*uncert
     'crittype':2, # (1,binary), (2,bothdir)
     'crit_trh':0.9, # for advice
-<<<<<<< HEAD
-    "dbg_flg":False
-=======
-    'checklist_flg':False,
-    "dbg_flg":True,
->>>>>>> 26533f793e5bbd9d9e091c81ae02129edb575efe
-
+    'checklist_flg':True,
+    "dbg_flg":False,
 }
 info['FAKE_ACTS'] = [info['RANDOM_HEAD'] for x in range(info['N_ENSEMBLE'])]
 info['load_time'] = datetime.date.today().ctime()
