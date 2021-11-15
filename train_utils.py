@@ -218,7 +218,7 @@ def train(step_number,
         sum_uncertainty=0
         first_step_in_episode=True
         disc_fact=1.0
-        while not terminal:
+        while (not terminal) and stepnum_thisep<info['MAX_EPISODE_STEPS_TRAIN']:
             if info['APPLY_GAMMA_TO_RET']:
                 disc_fact=info['GAMMA']*disc_fact
             if info['COMP_UNCERT'] and step_number % info['UNCERT_FREQ']==0:
