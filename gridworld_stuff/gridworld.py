@@ -14,7 +14,7 @@ class Gridworld:
 
         # maze height
         self.WORLD_HEIGHT = 5
-
+        self.compact_state_flg=True
         # all possible actions
         self.ACTION_UP = 0
         self.ACTION_DOWN = 1
@@ -32,13 +32,20 @@ class Gridworld:
 
         # all obstacles
         self.pits = [[0,0 ],[1,0],[2,0],[1,4],[2,5],[4,2]]
-        self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
+        if self.compact_state_flg:
+            self.state=self.agent_pos
+        else:
+            self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
 
         # max steps
         self.max_steps = float('inf')
 
     def reset(self):
         self.agent_pos = self.start_agent_pos.copy()
+        if self.compact_state_flg:
+            self.state=self.agent_pos
+        else:
+            self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
         return self.state.copy()
 
     def step(self, action):
@@ -61,7 +68,10 @@ class Gridworld:
         else:
             reward = 0.0
         self.agent_pos=[x,y]
-        self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
+        if self.compact_state_flg:
+            self.state=self.agent_pos
+        else:
+            self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
         return self.state.copy(), reward, terminal
 
 
