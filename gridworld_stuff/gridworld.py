@@ -8,7 +8,7 @@ import heapq
 from copy import deepcopy
 
 class Gridworld:
-    def __init__(self):
+    def __init__(self,start_agent_pos):
         # maze width
         self.WORLD_WIDTH = 6
 
@@ -20,7 +20,7 @@ class Gridworld:
         self.num_actions=len(self.actions)
 
         # start state
-        self.start_agent_pos = [4,5]
+        self.start_agent_pos = start_agent_pos
         self.agent_pos = self.start_agent_pos.copy()
 
         # goal agent_pos
