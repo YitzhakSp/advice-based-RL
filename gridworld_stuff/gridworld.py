@@ -16,11 +16,7 @@ class Gridworld:
         self.WORLD_HEIGHT = 5
         self.compact_state_flg=True
         # all possible actions
-        self.ACTION_UP = 0
-        self.ACTION_DOWN = 1
-        self.ACTION_LEFT = 2
-        self.ACTION_RIGHT = 3
-        self.actions = [self.ACTION_UP, self.ACTION_DOWN, self.ACTION_LEFT, self.ACTION_RIGHT]
+        self.actions = ['up','down','left','right']
         self.num_actions=len(self.actions)
 
         # start state
@@ -51,14 +47,16 @@ class Gridworld:
     def step(self, action):
         x, y = self.agent_pos
         life_lost, terminal = False, False
-        if action == self.ACTION_UP:
+        if action == 'up':
             x = max(x - 1, 0)
-        elif action == self.ACTION_DOWN:
+        elif action == 'down':
             x = min(x + 1, self.WORLD_HEIGHT - 1)
-        elif action == self.ACTION_LEFT:
+        elif action == 'left':
             y = max(y - 1, 0)
-        elif action == self.ACTION_RIGHT:
+        elif action == 'right':
             y = min(y + 1, self.WORLD_WIDTH - 1)
+        else:
+            raise Exception('undefined action')
         if [x, y] in self.pits:
             reward = -1.0
             life_lost, terminal = True, True
@@ -74,6 +72,9 @@ class Gridworld:
             self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
         return self.state.copy(), reward, terminal
 
+    def get_actions(self,s):
+        return self.actions
+
 
 def agent_pos_to_state(pos,goal,pits):
     state=[pos[0]-goal[0],pos[1]-goal[1]]
@@ -87,3 +88,9 @@ def agent_pos_to_state(pos,goal,pits):
 
 def position_diff(a,b):
     return [a[0]-b[0] , a[1]-b[1]]
+
+def gw_s_to_str(s):
+    return '('+str(s[0])+','+str(s[1])+')'
+
+def gw_a_to_str(a):
+    return a
