@@ -5,10 +5,10 @@ import pandas as pd
 from .RL_utils import *
 # for tabular learning
 class GenLearnAgent(object):
-    def __init__(self, get_actions,q_init,to_str_funcs,
+    def __init__(self, get_actions,q_init,to_str_funcs,q_tab=pd.DataFrame(),
                  alpha=0.1, gamma=1.0,dbg=False):
         self.dbg=dbg
-        self.q_tab=pd.DataFrame()
+        self.q_tab=q_tab
         self.q_init=q_init
         self.get_actions=get_actions
         self.alpha=alpha

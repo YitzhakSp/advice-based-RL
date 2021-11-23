@@ -10,7 +10,7 @@ import torch
 torch.set_num_threads(2)
 import torch.nn as nn
 import torch.nn.functional as F
-from params_gridworld import *
+from params_gridworld_dqn import *
 
 def get_head_outputs_as_numpy(state,qfunc):
     state1 = np.expand_dims(state, axis=0)

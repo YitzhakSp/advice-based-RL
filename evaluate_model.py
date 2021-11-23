@@ -1,7 +1,6 @@
-import numpy as np
-from train_utils import *
+from utils.train_utils import *
 from env import Environment
-from dqn_model import EnsembleNet, NetWithPrior
+from utils.dqn_model import EnsembleNet, NetWithPrior
 
 #PRIOR=True
 model_path='models/optimal_pong.pkl'

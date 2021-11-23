@@ -1,7 +1,4 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from other_utils import *
+from utils.other_utils import *
 
 # for gridworld
 class CoreNetGw(nn.Module):

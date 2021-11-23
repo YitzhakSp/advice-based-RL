@@ -1,6 +1,4 @@
-import json
-import matplotlib.pyplot as plt
-from other_utils import *
+from utils.other_utils import *
 import numpy as np
 wind=100 #5 Pong, 100 Gopher
 thismodel_dir='../simulations/Gopher/advice/15e-2'

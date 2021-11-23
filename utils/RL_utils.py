@@ -1,5 +1,5 @@
 import numpy as np
-import random
+#import random
 
 def choose_action(actions,action_values,eps):
     perm = np.random.permutation(len(action_values))
@@ -8,7 +8,8 @@ def choose_action(actions,action_values,eps):
     opt_ind = np.argmax(action_values_perm)
     actions_nonopt=[actions_perm[i] for i in perm if i!=opt_ind]
     if np.random.rand() <= eps and len(actions_nonopt)>0:
-        a = random.choice(actions_nonopt)
+        a = np.random.choice(actions_nonopt)
+        tmp=7
     else:
         a = actions_perm[opt_ind]
     return a

@@ -3,26 +3,15 @@
 from __future__ import print_function
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import os
-import numpy as np
 #from IPython import embed
-from collections import Counter
 import torch
 torch.set_num_threads(2)
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-import datetime
-import time
-from dqn_model_gw import *
-from dqn_utils import seed_everything, write_info_file, generate_gif, save_checkpoint
-from env import Environment
-from replay import ReplayMemory
+from utils.dqn_model_gw import *
+from utils.replay import ReplayMemory
 import config
-from argparse import ArgumentParser
-from train_utils import *
-from other_utils import *
+from utils.train_utils import *
+from utils.other_utils import *
 from gridworld_stuff.gridworld import *
 if info['dbg_flg']:
     print('debug mode !')
