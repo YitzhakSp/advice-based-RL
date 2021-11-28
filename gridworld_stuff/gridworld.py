@@ -6,28 +6,24 @@ import matplotlib
 import matplotlib.pyplot as plt
 import heapq
 from copy import deepcopy
+from gridworld_stuff.gw_draw_utils import *
 
 class Gridworld:
-    def __init__(self,start_agent_pos):
-        # maze width
-        self.WORLD_WIDTH = 6
+    def __init__(self,arch):
 
-        # maze height
-        self.WORLD_HEIGHT = 5
         self.compact_state_flg=True
         # all possible actions
         self.actions = ['up','down','left','right']
         self.num_actions=len(self.actions)
-
-        # start state
-        self.start_agent_pos = start_agent_pos
+        self.start_agent_pos = arch['start_pos']
         self.agent_pos = self.start_agent_pos.copy()
+        self.WORLD_WIDTH = arch['WORLD_WIDTH']
+        self.WORLD_HEIGHT = arch['WORLD_HEIGHT']
+        self.goal = arch['goal']
+        self.pits = arch['pits']
+        self.walls=arch['walls']
+        self.poison=arch['poison']
 
-        # goal agent_pos
-        self.goal = [0, 2]
-
-        # all obstacles
-        self.pits = [[0,0 ],[1,0],[2,0],[1,4],[2,5],[4,2]]
         if self.compact_state_flg:
             self.state=self.agent_pos
         else:
@@ -35,7 +31,7 @@ class Gridworld:
 
         # max steps
         self.max_steps = float('inf')
-
+        self.gridworld_image=GridWorldImg(self.WORLD_WIDTH,self.WORLD_HEIGHT)
     def reset(self):
         self.agent_pos = self.start_agent_pos.copy()
         if self.compact_state_flg:
@@ -48,24 +44,29 @@ class Gridworld:
         x, y = self.agent_pos
         life_lost, terminal = False, False
         if action == 'up':
-            x = max(x - 1, 0)
+            x_new,y_new = max(x - 1, 0),y
         elif action == 'down':
-            x = min(x + 1, self.WORLD_HEIGHT - 1)
+            x_new,y_new = min(x + 1, self.WORLD_HEIGHT - 1),y
         elif action == 'left':
-            y = max(y - 1, 0)
+            x_newy_new = x,max(y - 1, 0)
         elif action == 'right':
-            y = min(y + 1, self.WORLD_WIDTH - 1)
+            x_new,y_new = x,min(y + 1, self.WORLD_WIDTH - 1)
         else:
             raise Exception('undefined action')
-        if [x, y] in self.pits:
+        if [x_new, y_new] in self.pits:
             reward = -1.0
             life_lost, terminal = True, True
-        elif [x, y] == self.goal:
+        elif [x_new, y_new] in self.walls:
+            x_new,y_new=x,y
+            reward=0.0
+        elif [x_new, y_new] in self.poison:
+            reward=-0.01
+        elif [x_new, y_new] == self.goal:
             reward = 1.0
             life_lost, terminal = False, True
         else:
             reward = 0.0
-        self.agent_pos=[x,y]
+        self.agent_pos=[x_new,y_new]
         if self.compact_state_flg:
             self.state=self.agent_pos
         else:
@@ -74,6 +75,22 @@ class Gridworld:
 
     def get_actions(self,s):
         return self.actions
+
+    def draw(self):
+        #self.gridworld_image.annotation_add((0,0),'P')
+        self.gridworld_image.circle_add((0,0))
+        self.gridworld_image.tile_add((self.goal[1],self.goal[0]))
+        for w in self.walls:
+            self.gridworld_image.tile_add((w[1],w[0]), (0, 0, 0))
+        for p in self.poison:
+            self.gridworld_image.circle_add((p[1],p[0]), (100, 0, 0),radius_ratio=0.5)
+        for p in self.pits:
+            self.gridworld_image.circle_add((p[1], p[0]), (0, 100, 0))
+        self.gridworld_image.update_screen()
+        self.gridworld_image.main()
+
+
+
 
 
 def agent_pos_to_state(pos,goal,pits):

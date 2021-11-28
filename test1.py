@@ -1,7 +1,5 @@
-import time
-import matplotlib.pyplot as plt
-import numpy as np
+from gridworld_stuff.gridworld import *
+from gridworld_stuff.arch_longwall import *
 
-a=[2,-3]
-b=np.array(a,dtype=int)
-print(b)
+env = Gridworld(arch)
+env.draw()
