@@ -339,7 +339,7 @@ class GridWorldImg:
 
 
 if __name__ == '__main__':
-
+    print('kwa kwa')
     # A few examples here
 
     # gw1 = GridWorldImg()

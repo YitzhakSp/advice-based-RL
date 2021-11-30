@@ -5,8 +5,8 @@ import pandas as pd
 from .RL_utils import *
 # for tabular learning
 class GenLearnAgent(object):
-    def __init__(self, get_actions,q_init,to_str_funcs,q_tab=pd.DataFrame(),
-                 alpha=0.1, gamma=1.0,dbg=False):
+    def __init__(self, get_actions,q_init,to_str_funcs,gamma,q_tab=pd.DataFrame(),
+                 alpha=0.1,dbg=False):
         self.dbg=dbg
         self.q_tab=q_tab
         self.q_init=q_init
@@ -40,7 +40,11 @@ class GenLearnAgent(object):
         action_values =np.array( [self.q_tab.loc[self.s_to(s),self.a_to(a)] for a in actions])
         return choose_action(actions,action_values,eps)
 
-
+    # this method really does not belong to a general learning agent, but is there for convenience
+    def comp_importance(self,s):
+        action_values = np.array([self.q_tab.loc[self.s_to(s), self.a_to(a)] for a in actions])
+        imp=action_values.max()-action_values.min()
+        return imp
 
 class SarsaAgent(GenLearnAgent):
 

@@ -48,7 +48,7 @@ class Gridworld:
         elif action == 'down':
             x_new,y_new = min(x + 1, self.WORLD_HEIGHT - 1),y
         elif action == 'left':
-            x_newy_new = x,max(y - 1, 0)
+            x_new,y_new = x,max(y - 1, 0)
         elif action == 'right':
             x_new,y_new = x,min(y + 1, self.WORLD_WIDTH - 1)
         else:

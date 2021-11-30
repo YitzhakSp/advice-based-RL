@@ -1,15 +1,9 @@
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-eval_freq=2 #evaluation episode once every x episodes
-'''
-files=[('../simulations/Pong/no_advice/avg_rewards_smooth.npy','BDQN-plain'),
-    ('../simulations/Pong/advice/unlimited_hardtrh/0.05/avg_rewards_smooth.npy','adv 5e-2'),
-       ('../simulations/Pong/advice/unlimited_hardtrh/0.10/avg_rewards_smooth.npy', 'adv 10e-2')
-       ]
-'''
-perf_files=[('../simulations/Gopher/no_advice/avg_rewards_smooth.npy','no adv'),
-            ('../simulations/Gopher/advice/15e-2/avg_rewards_smooth.npy','adv')]
+eval_freq=10 #evaluation episode once every x episodes
+perf_files=[('../models/gridworld/300/avg_rewards.npy','300'),
+            ('../models/gridworld/400/avg_rewards.npy','400')]
 plt.xlabel('episode')
 plt.ylabel('reward')
 for f in perf_files:
