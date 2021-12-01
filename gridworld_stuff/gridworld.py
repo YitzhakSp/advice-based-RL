@@ -62,7 +62,7 @@ class Gridworld:
         elif [x_new, y_new] in self.poison:
             reward=-0.01
         elif [x_new, y_new] == self.goal:
-            reward = 1.0
+            reward = 2.0
             life_lost, terminal = False, True
         else:
             reward = 0.0

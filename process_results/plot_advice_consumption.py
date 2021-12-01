@@ -23,7 +23,7 @@ if avg:
         #mypl.axhline(150000, linestyle='--')
         plt.legend()
 else:
-    perf_file = '../simulations/Gopher/advice/20e-2/perf_1.json'
+    perf_file = '../models/gridworld/perf_1.json'
     print("plotting advice_budget for 1 run ...")
     '''
     max_steps = 2.5e6
@@ -35,15 +35,15 @@ else:
     advice_cnt=np.array(perf['advice_cnt'])
     advice_cum=np.cumsum(advice_cnt)
     mypl.subplot(1, 2, 1)
-    mypl.plot(perf['steps'],advice_cum,label='cummulative advice')
+    mypl.plot(advice_cum,label='cummulative advice')
     mypl.legend()
-    steps=np.array(perf['steps'])
+    steps=np.array(perf['train_steps'])
     steps_in_ep=steps[1:]-steps[:-1]
     steps_in_ep=np.concatenate((np.array([steps[0]]),steps_in_ep))
     advice_ratio=advice_cnt/steps_in_ep
     mypl.subplot(1, 2, 2)
     mypl.yscale('log')
-    mypl.plot(perf['steps'],advice_ratio,label='advice ratio')
+    mypl.plot(advice_ratio,label='advice ratio')
     mypl.legend()
 mypl.grid(True)
 mypl.savefig('advice_consumption.png')

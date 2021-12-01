@@ -45,7 +45,8 @@ for current_seed in random_seeds:
     'eval_episodes':[],
     'train_scores':[],
     'eval_scores':[],
-    'env_ok_eval':[]
+    'env_ok_eval':[],
+    'advice_cnt':[]
     }
     best_score_train,best_score_eval=None,None
     steps_train = 0
@@ -66,6 +67,7 @@ for current_seed in random_seeds:
         dfact=1.0
         score_train=0
         terminal=False
+        advice_cnt=0
         while (not terminal) and (steps_thisep<max_episode_steps):
             advice_required=False
             if use_advice:
@@ -74,6 +76,7 @@ for current_seed in random_seeds:
                     advice_required=True
             if use_advice and advice_required:
                 a = advice_ag.choose_action_from_qtab(s=s,eps=0)
+                advice_cnt+=1
             else:
                 a = ag.choose_action_from_qtab(s,eps)
             s_, r, terminal = env.step(a)
@@ -88,6 +91,7 @@ for current_seed in random_seeds:
         scores.append(score_train)
         perf['train_steps'].append(steps_train)
         perf['train_scores'].append(score_train)
+        perf['advice_cnt'].append(advice_cnt)
         if best_score_train is None:
             best_score_train=score_train
         else:

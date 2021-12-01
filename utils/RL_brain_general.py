@@ -42,6 +42,7 @@ class GenLearnAgent(object):
 
     # this method really does not belong to a general learning agent, but is there for convenience
     def comp_importance(self,s):
+        actions = self.get_actions(s)
         action_values = np.array([self.q_tab.loc[self.s_to(s), self.a_to(a)] for a in actions])
         imp=action_values.max()-action_values.min()
         return imp
