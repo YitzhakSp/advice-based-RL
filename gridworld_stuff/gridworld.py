@@ -22,16 +22,16 @@ class Gridworld:
         self.goal = arch['goal']
         self.pits = arch['pits']
         self.walls=arch['walls']
-        self.poison=arch['poison']
-
+        self.ra_states=arch['ra_states']
+        self.ra_states_neighbours=get_neighbours(self.ra_states)
         if self.compact_state_flg:
             self.state=self.agent_pos
         else:
             self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
-
         # max steps
         self.max_steps = float('inf')
         self.gridworld_image=GridWorldImg(self.WORLD_WIDTH,self.WORLD_HEIGHT)
+
     def reset(self):
         self.agent_pos = self.start_agent_pos.copy()
         if self.compact_state_flg:
@@ -59,7 +59,7 @@ class Gridworld:
         elif [x_new, y_new] in self.walls:
             x_new,y_new=x,y
             reward=0.0
-        elif [x_new, y_new] in self.poison:
+        elif [x_new, y_new] in self.ra_states:
             reward=-0.01
         elif [x_new, y_new] == self.goal:
             reward = 2.0
@@ -82,16 +82,19 @@ class Gridworld:
         self.gridworld_image.tile_add((self.goal[1],self.goal[0]))
         for w in self.walls:
             self.gridworld_image.tile_add((w[1],w[0]), (0, 0, 0))
-        for p in self.poison:
+        for p in self.ra_states:
             self.gridworld_image.circle_add((p[1],p[0]), (100, 0, 0),radius_ratio=0.5)
         for p in self.pits:
             self.gridworld_image.circle_add((p[1], p[0]), (0, 100, 0))
         self.gridworld_image.update_screen()
         self.gridworld_image.main()
 
-
-
-
+def comp_crit(env,s):
+    if (s in env.ra_states_neighbours) or (s in env.ra_states):
+        crit=1.0
+    else:
+        crit=0
+    return crit
 
 def agent_pos_to_state(pos,goal,pits):
     state=[pos[0]-goal[0],pos[1]-goal[1]]
@@ -111,3 +114,13 @@ def gw_s_to_str(s):
 
 def gw_a_to_str(a):
     return a
+
+def get_neighbours(states):
+    neighbours=[]
+    for s in states:
+        x,y=s
+        ng_s=[[x+1,y],[x-1,y],[x,y+1],[x,y-1]]
+        for ng in ng_s:
+            if not (ng in neighbours):
+                neighbours.append(ng)
+    return neighbours

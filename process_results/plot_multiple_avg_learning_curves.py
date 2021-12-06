@@ -6,8 +6,8 @@ perf_files=[('../models/gridworld/no_advice/300/avg_rewards.npy','no_adv'),
             ('../models/gridworld/with_advice/importance/1e-2/avg_rewards.npy','adv_1e-2'),
             ('../models/gridworld/with_advice/importance/2e-2/avg_rewards.npy', 'adv_2e-2'),
             ('../models/gridworld/with_advice/importance/5e-2/avg_rewards.npy', 'adv_5e-2'),
-            ('../models/gridworld/with_advice/importance/1e-1/avg_rewards.npy', 'adv_1e-1'),
-            ('../models/gridworld/with_advice/importance/2e-1/avg_rewards.npy', 'adv_2e-1')
+            ('../models/gridworld/with_advice/crit/avg_rewards.npy', 'crit'),
+
             ]
 plt.xlabel('episode')
 plt.ylabel('reward')
