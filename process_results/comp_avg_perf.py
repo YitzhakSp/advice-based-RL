@@ -2,7 +2,7 @@ from utils.other_utils import *
 import json
 
 #thismodel_dir='../simulations/Gopher/no_advice'
-thismodel_dir='../models/gridworld/with_advice/crit'
+thismodel_dir='../models/gridworld/no_advice/arch_3'
 seeds=[1,2,3,4,5,6,7,8,9,10]
 #seeds=[1]
 analyze_advice_cnt=False

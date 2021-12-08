@@ -9,14 +9,14 @@ from utils.RL_brain_general import *
 from utils.train_utils_qlearn import *
 from gridworld_stuff.gridworld import *
 from params_gridworld import *
-from gridworld_stuff.arch_longwall_2 import *
+from gridworld_stuff.arch_longwall_3 import *
 
 if not dbg:
     print('Lets go through the checklist ...')
     if use_advice:
         input('correct qfunc for advice ?')
 random_seeds=[1,2,3,4,5,6,7,8,9,10]
-#random_seeds=[1]
+#random_seeds=[2]
 env = Gridworld(arch)
 gw_to_str_funcs={
 's_to_str':gw_s_to_str,
@@ -29,7 +29,7 @@ if use_advice:
                        q_init=q_init,
                        gamma=gamma,
                        to_str_funcs=gw_to_str_funcs,
-                       q_tab=pd.read_pickle(models_dir+'/qfunc_opt.pkl'))
+                       q_tab=pd.read_pickle(qfunc_adv_file))
 for current_seed in random_seeds:
     print('learning procedure with seed: '+str(current_seed))
     print('in progress ...')

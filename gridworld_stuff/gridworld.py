@@ -10,7 +10,6 @@ from gridworld_stuff.gw_draw_utils import *
 
 class Gridworld:
     def __init__(self,arch):
-
         self.compact_state_flg=True
         # all possible actions
         self.actions = ['up','down','left','right']
@@ -62,7 +61,7 @@ class Gridworld:
         elif [x_new, y_new] in self.ra_states:
             reward=-0.01
         elif [x_new, y_new] == self.goal:
-            reward = 2.0
+            reward = 4.0
             life_lost, terminal = False, True
         else:
             reward = 0.0
