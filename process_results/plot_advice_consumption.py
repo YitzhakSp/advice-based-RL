@@ -2,15 +2,16 @@ from utils.other_utils import *
 import json
 import matplotlib.pyplot as plt
 
-avg=False
+avg=True
 mypl=plt
 mypl.ylabel('num_advice')
 #mypl.title('Pong_advice')
 #mypl.plot(perf['steps'],perf['advice_cnt'])
 if avg:
-    files = [('../simulations/advice/limited/0.04/critno/avg_advice_cnt.npy', 'BDQN-adv'),
-             ('../simulations/advice/limited/0.04/crityes/avg_advice_cnt.npy', 'BDQN-crit1'),
-             ('../simulations/advice/limited/0.04/critxuncert/avg_advice_cnt.npy', 'BDQN-crit2')
+    files = [('../simulations/gridworld/with_advice/arch_3/importance/2e-2/avg_advice_cnt.npy', 'imp_2e-2'),
+             ('../simulations/gridworld/with_advice/arch_3/importance/1e-2/avg_advice_cnt.npy', 'imp_1e-2'),
+             ('../simulations/gridworld/with_advice/arch_3/crit/avg_advice_cnt.npy', 'crit')
+
              ]
     mypl.xlabel('episodes')
     mypl.xlim(0, 1070)

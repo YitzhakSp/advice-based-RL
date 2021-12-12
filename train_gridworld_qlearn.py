@@ -71,16 +71,19 @@ for current_seed in random_seeds:
         while (not terminal) and (steps_thisep<max_episode_steps):
             advice_required=False
             if use_advice:
-                if advice_criterion=='imp':
-                    imp=ag.comp_importance(s)
-                    if imp > imp_trh:
-                        advice_required=True
-                elif advice_criterion=='crit':
-                    crit=comp_crit(env,s)
-                    if crit > crit_trh:
-                        advice_required=True
+                if limited_advice and advice_cnt>advice_budget:
+                    advice_required=False
                 else:
-                    raise Exception('unknown advice criterion')
+                    if advice_criterion=='imp':
+                        imp=ag.comp_importance(s)
+                        if imp > imp_trh:
+                            advice_required=True
+                    elif advice_criterion=='crit':
+                        crit=comp_crit(env,s)
+                        if crit > crit_trh:
+                            advice_required=True
+                    else:
+                        raise Exception('unknown advice criterion')
 
             if use_advice and advice_required:
                 a = advice_ag.choose_action_from_qtab(s=s,eps=0)
