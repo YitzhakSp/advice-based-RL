@@ -8,9 +8,9 @@ mypl.ylabel('num_advice')
 #mypl.title('Pong_advice')
 #mypl.plot(perf['steps'],perf['advice_cnt'])
 if avg:
-    files = [('../simulations/gridworld/with_advice/arch_3/importance/2e-2/avg_advice_cnt.npy', 'imp_2e-2'),
-             ('../simulations/gridworld/with_advice/arch_3/importance/1e-2/avg_advice_cnt.npy', 'imp_1e-2'),
-             ('../simulations/gridworld/with_advice/arch_3/crit/avg_advice_cnt.npy', 'crit')
+    files = [('../simulations/Gridworld/with_advice/arch_3/importance/adv_limit_1000/2e-2/avg_advice_cnt.npy', 'imp_2e-2'),
+             ('../simulations/Gridworld/with_advice/arch_3/importance/adv_limit_1000/1e-2/avg_advice_cnt.npy', 'imp_1e-2'),
+             ('../simulations/Gridworld/with_advice/arch_3/crit/adv_limit_1000/avg_advice_cnt.npy', 'crit')
 
              ]
     mypl.xlabel('episodes')
