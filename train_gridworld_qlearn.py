@@ -10,11 +10,14 @@ from utils.train_utils_qlearn import *
 from gridworld_stuff.gridworld import *
 from params_gridworld import *
 from gridworld_stuff.arch_longwall_3 import *
+import json
 
 if not dbg:
     print('Lets go through the checklist ...')
     if use_advice:
         input('correct qfunc for advice ?')
+with open(models_dir+'/info.json','w') as fp:
+    json.dump(info,fp)
 random_seeds=[1,2,3,4,5,6,7,8,9,10]
 #random_seeds=[2]
 env = Gridworld(arch)
