@@ -1,8 +1,12 @@
+import numpy as np
+
 from utils.other_utils import *
 import json
 
 #thismodel_dir='../simulations/Gopher/no_advice'
-thismodel_dir='../simulations/Gridworld/with_advice/arch_3/importance/adv_limit_30/2e-2'
+thismodel_dir='../simulations/Gridworld/with_advice/arch_3/crit/adv_limit_10'
+thismodel_dir='../simulations/Gridworld/no_advice/arch_3'
+
 seeds=[1,2,3,4,5,6,7,8,9,10]
 #seeds=[1]
 analyze_advice_cnt=True
@@ -20,6 +24,8 @@ print('min_eval_episodes = '+str(min_eval_episodes))
 
 sum_eval_rewards=np.zeros(min_eval_episodes)
 sum_advice_cnt=np.zeros(min_train_episodes)
+all_rewards=np.empty([len(seeds),min_eval_episodes])
+i=0
 for seed in seeds:
     filename=thismodel_dir + '/perf_' + str(seed) + '.json'
     print('loading '+ filename +'...')
@@ -27,14 +33,18 @@ for seed in seeds:
         perf = json.load(f)
     valid_eval_episodes_ratio = round(sum(perf['env_ok_eval']) / len(perf['env_ok_eval']), 2)
     print('valid_eval_episodes_ratio = ' + str(valid_eval_episodes_ratio))
-    eval_rewards=np.array(perf['eval_scores'][:min_eval_episodes])
-    sum_eval_rewards+=eval_rewards
+    assert(valid_eval_episodes_ratio>0.99) # if not, code needs to be changed
+    all_rewards[i]=np.array(perf['eval_scores'][:min_eval_episodes])
+    i+=1
     if analyze_advice_cnt:
         advice_cnt=np.array(perf['advice_cnt'][:min_train_episodes])
         sum_advice_cnt+=advice_cnt
-avg_eval_rewards=sum_eval_rewards/len(seeds)
+
+avg_eval_rewards=np.mean(all_rewards,axis=0)
+rewards_se=np.std(all_rewards,axis=0)/np.sqrt(len(seeds))
+rewards_stats=np.concatenate([avg_eval_rewards[np.newaxis,...],rewards_se[np.newaxis,...]],axis=0)
 print('saving avg rewards ...')
-np.save(thismodel_dir+'/avg_rewards.npy',avg_eval_rewards)
+np.save(thismodel_dir+'/rewards_statistics.npy',rewards_stats)
 if analyze_advice_cnt:
     avg_advice_cnt = sum_advice_cnt / len(seeds)
     np.save(thismodel_dir+'/avg_advice_cnt.npy',avg_advice_cnt)
