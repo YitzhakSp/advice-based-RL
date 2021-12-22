@@ -4,10 +4,10 @@ from utils.other_utils import *
 import json
 
 #thismodel_dir='../simulations/Gopher/no_advice'
-thismodel_dir='../simulations/Gridworld/with_advice/arch_3/crit/adv_limit_10'
-thismodel_dir='../simulations/Gridworld/no_advice/arch_3'
+thismodel_dir='../simulations/Gridworld/with_advice/arch_3/importance/adv_limit_10/2e-2'
+#thismodel_dir='../simulations/Gridworld/no_advice/arch_3'
 
-seeds=[1,2,3,4,5,6,7,8,9,10]
+seeds=range(1,101)
 #seeds=[1]
 analyze_advice_cnt=True
 max_steps=2e6

@@ -16,7 +16,7 @@ for f in perf_files:
     mrg_of_er=z*reward_stats[1]
     x=np.arange(0,eval_freq*mean.shape[0],eval_freq)
     plt.plot(x,mean,label=f[1])
-    plt.fill_between(x,mean-mrg_of_er,mean+mrg_of_er)
+    plt.fill_between(x,mean-mrg_of_er,mean+mrg_of_er,alpha=0.1)
     plt.legend()
 plt.grid(True)
 print('saving rewards plot ...')
