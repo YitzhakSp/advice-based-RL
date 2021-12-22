@@ -29,7 +29,7 @@ class Gridworld:
             self.state=agent_pos_to_state(self.agent_pos,self.goal,self.pits)
         # max steps
         self.max_steps = float('inf')
-        self.gridworld_image=GridWorldImg(self.WORLD_WIDTH,self.WORLD_HEIGHT)
+        self.gridworld_image=GridWorldImg(self.WORLD_WIDTH,self.WORLD_HEIGHT,tile_size=50)
 
     def reset(self):
         self.agent_pos = self.start_agent_pos.copy()

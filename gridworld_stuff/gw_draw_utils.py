@@ -143,6 +143,7 @@ class GridWorldImg:
             self.annotate(location, self.annotations[0], self.annotations[1])
         pg.display.update()
         pg.display.set_caption(self.title)
+        pg.image.save(self.screen,'plots/Gridworld/gridworld.png')
 
     def get_corner_coords(self, location: tuple):
         """Helper method for drawing methods [ i.e. self.tile_color() ].
