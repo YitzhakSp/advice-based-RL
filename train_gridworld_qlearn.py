@@ -18,8 +18,8 @@ if not dbg:
         input('correct qfunc for advice ?')
 with open(models_dir+'/info.json','w') as fp:
     json.dump(info,fp)
-#random_seeds=[1,2,3,4,5,6,7,8,9,10]
-random_seeds=range(11,101)
+random_seeds=[1,2,3,4,5,6,7,8,9,10]
+#random_seeds=range(11,101)
 env = Gridworld(arch)
 #env.draw()
 gw_to_str_funcs={
@@ -55,6 +55,7 @@ for current_seed in random_seeds:
     best_score_train,best_score_eval=None,None
     steps_train = 0
     last_improved_eval_episode=0
+    advice_cnt = 0
     for episode in range(num_episodes):
         if verbose:
             print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
@@ -71,7 +72,6 @@ for current_seed in random_seeds:
         dfact=1.0
         score_train=0
         terminal=False
-        advice_cnt=0
         while (not terminal) and (steps_thisep<max_episode_steps):
             advice_required=False
             if use_advice:
@@ -90,6 +90,8 @@ for current_seed in random_seeds:
                         raise Exception('unknown advice criterion')
 
             if use_advice and advice_required:
+                #print('asking for advice ...')
+                #print('advice_cnt ='+str(advice_cnt))
                 a = advice_ag.choose_action_from_qtab(s=s,eps=0)
                 advice_cnt+=1
             else:

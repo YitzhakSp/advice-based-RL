@@ -3,3 +3,4 @@ from gridworld_stuff.arch_longwall_3 import *
 
 env = Gridworld(arch)
 env.draw()
+print('ku')

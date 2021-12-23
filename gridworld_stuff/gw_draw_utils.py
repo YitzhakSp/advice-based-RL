@@ -143,7 +143,7 @@ class GridWorldImg:
             self.annotate(location, self.annotations[0], self.annotations[1])
         pg.display.update()
         pg.display.set_caption(self.title)
-        pg.image.save(self.screen,'plots/Gridworld/gridworld.png')
+        pg.image.save(self.screen,'gridworld.png')
 
     def get_corner_coords(self, location: tuple):
         """Helper method for drawing methods [ i.e. self.tile_color() ].
@@ -288,8 +288,9 @@ class GridWorldImg:
 
     def circle_delete(self, location: tuple):
         """Delete an active circle at <location>; it will appear active until the screen is updated."""
-        if location in self.tiles:
+        if location in self.circles:
             self.circles.pop(location)
+        c=6
 
     def circles_clear(self):
         """Delete all active circles; they will appear active until the screen is updated."""

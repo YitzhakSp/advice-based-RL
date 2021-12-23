@@ -3,11 +3,10 @@ import numpy as np
 from utils.other_utils import *
 import json
 
-#thismodel_dir='../simulations/Gopher/no_advice'
-thismodel_dir='../simulations/Gridworld/with_advice/arch_3/importance/adv_limit_10/2e-2'
-#thismodel_dir='../simulations/Gridworld/no_advice/arch_3'
+thismodel_dir='../simulations/Gridworld/with_advice/arch_3/importance/adv_budget_200/1e-2'
+#thismodel_dir='../simulations/Gridworld/with_advice/arch_3/crit/adv_budget_200'
 
-seeds=range(1,101)
+seeds=range(1,11)
 #seeds=[1]
 analyze_advice_cnt=True
 max_steps=2e6
