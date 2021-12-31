@@ -4,9 +4,9 @@ from utils.other_utils import *
 import json
 
 thismodel_dir='../simulations/Gridworld/with_advice/arch_3/importance/adv_budget_200/1e-2'
-#thismodel_dir='../simulations/Gridworld/with_advice/arch_3/crit/adv_budget_200'
+thismodel_dir='../simulations/Gridworld/with_advice/arch_3/crit/adv_budget_200'
 
-seeds=range(1,11)
+seeds=range(1,101)
 #seeds=[1]
 analyze_advice_cnt=True
 max_steps=2e6

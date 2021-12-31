@@ -18,8 +18,8 @@ if not dbg:
         input('correct qfunc for advice ?')
 with open(models_dir+'/info.json','w') as fp:
     json.dump(info,fp)
-random_seeds=[1,2,3,4,5,6,7,8,9,10]
-#random_seeds=range(11,101)
+#random_seeds=[1,2,3,4,5,6,7,8,9,10]
+random_seeds=range(11,101)
 env = Gridworld(arch)
 #env.draw()
 gw_to_str_funcs={
