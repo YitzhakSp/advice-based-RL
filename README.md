@@ -1,4 +1,4 @@
-# Bootstrap DQN
+# RL with advice
 
 This repo contains our implementation of a Bootstrapped DQN with options to add a Randomized Prior, Dueling, and Double DQN in ALE games. 
 
