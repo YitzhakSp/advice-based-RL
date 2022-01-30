@@ -77,12 +77,17 @@ class Gridworld:
 
     def draw(self):
         #self.gridworld_image.annotation_add((0,0),'P')
-        self.gridworld_image.circle_add((0,0))
-        self.gridworld_image.tile_add((self.goal[1],self.goal[0]))
+        #self.gridworld_image.circle_add((0,0))
+        #self.gridworld_image.agent_place(self.agent_pos)
+        # to display in middle of game next line needs to be changed
+        # to set the coordinates to agent's current position
+        self.gridworld_image.agent_pos_inpix=(5,720) # pos in pixels
+        self.gridworld_image.goal_pos_inpix=(5,5) # pos in pixels
+        #self.gridworld_image.tile_add((self.goal[1],self.goal[0]))
         for w in self.walls:
             self.gridworld_image.tile_add((w[1],w[0]), (0, 0, 0))
         for p in self.ra_states:
-            self.gridworld_image.circle_add((p[1],p[0]), (100, 0, 0),radius_ratio=0.5)
+            self.gridworld_image.circle_add((p[1],p[0]), (200, 0, 0),radius_ratio=0.5)
         for p in self.pits:
             self.gridworld_image.circle_add((p[1], p[0]), (0, 100, 0))
         self.gridworld_image.update_screen()

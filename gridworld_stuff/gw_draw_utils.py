@@ -26,7 +26,8 @@ class GridWorldImg:
             call for differently sized windows. This may be partially fixable with further development."""
 
     def __init__(self, width_units: int = 10, height_units: int = 10, tile_size: int = 95,
-                 margin: int = 5, background: tuple = (50, 50, 50), inactive_tile_color: tuple = (100, 100, 100),
+                 margin: int = 5, background: tuple = (50, 50, 50),agent_img='gridworld_stuff/agent.png',
+                 goal_img='gridworld_stuff/goal.jpeg',inactive_tile_color: tuple = (255, 255, 255),
                  active_tile_color: tuple = (70, 70, 200), default_line_color: tuple = (200, 200, 200),
                  default_line_width: int = 3, path_color: tuple = None, default_path_width: int = 3,
                  default_circle_color: tuple = (200, 200, 200), default_circle_ratio: float = .65,
@@ -40,6 +41,8 @@ class GridWorldImg:
         self.screen = pg.display.set_mode((self.screen_width, self.screen_height))
         self.title = title
         pg.display.set_caption(title)
+        self.agent_img = pg.image.load(agent_img).convert()
+        self.goal_img = pg.image.load(goal_img).convert()
 
         # Colors
         self.background = background
@@ -59,7 +62,8 @@ class GridWorldImg:
         self.path = [].copy()
         self.circles = {}
         self.annotations = {}
-
+        self.agent_pos_inpix=None # will be set later
+        self.goal_pos_inpix=None
         # Element sizes
         self.tile_size = tile_size
         self.path_width = default_path_width
@@ -131,6 +135,10 @@ class GridWorldImg:
             for x in range(self.width_units):
                 self.tile_color((x, y), active=False, suppress=True)
         # Re-drawing active elements
+        if not (self.agent_pos_inpix is None):
+            self.screen.blit(self.agent_img,self.agent_pos_inpix)  # paint to screen
+        if not (self.goal_pos_inpix is None):
+            self.screen.blit(self.goal_img, self.goal_pos_inpix)  # paint to screen
         for location in self.tiles:
             self.tile_color(location, self.tiles[location])
         for location in self.circles:
@@ -342,35 +350,6 @@ class GridWorldImg:
 
 if __name__ == '__main__':
     print('kwa kwa')
-    # A few examples here
-
-    # gw1 = GridWorldImg()
-    # for i in list(range(4)):
-    #     for j in range(3):
-    #         gw1.tile_add((i, j))
-    # points = [(0, 0), (1, 0), (1, 1), (2, 1), (3, 1)]
-    # for point in points:
-    #     gw1.path_extend(point)
-    # gw1.circle_add((4, 5))
-    # gw1.circle_add((7, 7), (0, 150, 100), .3)
-    # gw1.update_screen()
-    # gw1.annotate((5, 5), 'Text')
-    # gw1.annotate((5, 4.75), 'More Text')
-    # gw1.main()
-
-    # gw2 = GridWorldImg(18, 14, 45, 1)
-    # gw2.tile_color((3, 5), (200, 0, 0))
-    # gw2.circle_draw((7, 9), (0, 255, 100), .5)
-    # gw2.circle_draw((5.5, 5.5), radius_ratio=.25)
-    # gw2.tile_color((13, 9), (100, 0, 0))
-    # gw2.line_draw((17, 13), (17, 9))
-    # gw2.line_draw((17, 9), (14, 3))
-    # gw2.line_draw((14, 2), (14.75, 2.75))
-    # gw2.path_extend((4, 2))
-    # gw2.path_extend((7, 2))
-    # gw2.path_extend((8, 4))
-    # gw2.path_draw(color=(200, 140, 170), width=7)
-    # gw2.main()
 
     gw3 = GridWorldImg(75, 75, 8, 1)
     for i in range(30):
